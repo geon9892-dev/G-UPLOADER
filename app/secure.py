@@ -25,7 +25,8 @@ if sys.platform == "win32":
         inp = _Blob(len(data), ctypes.cast(buf, ctypes.POINTER(ctypes.c_char)))
         out = _Blob()
         if not fn(ctypes.byref(inp), None, None, None, None, 0, ctypes.byref(out)):
-            raise OSError("Windows 암호화(DPAPI) 처리에 실패했습니다.")
+            code = ctypes.GetLastError()
+            raise OSError(f"Windows 암호화(DPAPI) 처리에 실패했습니다 (오류 {code}).")
         try:
             return ctypes.string_at(out.pbData, out.cbData)
         finally:
@@ -44,12 +45,23 @@ else:  # macOS/Linux: 사용자 홈 폴더 권한에 의존
         return b
 
 
-def _load() -> dict:
+class SecretsError(OSError):
+    pass
+
+
+def _load(strict: bool = False) -> dict:
+    """저장된 키를 읽는다. 파일은 있는데 풀지 못하면 strict일 때 예외를 낸다.
+
+    풀지 못한 채 빈 값으로 덮어쓰면 기존 키가 모두 사라지므로 set()은 strict로 읽는다.
+    """
     if not paths.SECRETS_FILE.exists():
         return {}
     try:
         return json.loads(_unprotect(paths.SECRETS_FILE.read_bytes()).decode("utf-8"))
-    except Exception:
+    except Exception as e:
+        print(f"[secure] 저장된 키를 읽지 못했습니다: {e}")
+        if strict:
+            raise SecretsError("저장된 키를 읽지 못해 저장하지 않았습니다. 프로그램을 닫고 다시 열어 주세요.")
         return {}
 
 
@@ -60,7 +72,7 @@ def get(name: str):
 
 def set(name: str, value) -> None:  # noqa: A001
     with _lock:
-        data = _load()
+        data = _load(strict=True)
         if value is None:
             data.pop(name, None)
         else:

@@ -27,7 +27,7 @@ app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 app.mount("/static", StaticFiles(directory=str(paths.STATIC_DIR)), name="static")
 
 KNOWN_ERRORS = (writer.WriterError, youtube.YTError, media.MediaError, updater.UpdateError,
-                enhance.EnhanceError)
+                enhance.EnhanceError, secure.SecretsError)
 
 
 def set_port(port: int) -> None:
