@@ -7,4 +7,5 @@ google-api-python-client>=2.160
 google-auth-oauthlib>=1.2
 google-auth>=2.38
 httpx>=0.28
+pywebview>=6.2
 Pillow>=11.0

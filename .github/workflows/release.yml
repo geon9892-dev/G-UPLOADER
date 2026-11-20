@@ -34,7 +34,7 @@ jobs:
 
       - name: Build exe
         run: >
-          pyinstaller --noconfirm --clean --name G-UPLOADER --console
+          pyinstaller --noconfirm --clean --name G-UPLOADER --windowed
           --add-data "app/static;app/static"
           --add-data "templates;templates"
           --collect-all faster_whisper
