@@ -1,0 +1,1527 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap">
+<style>@font-face{font-family:"Pretendard";src:url("/static/fonts/Pretendard-ExtraBold.otf") format("opentype");font-weight:800;font-display:swap}</style>
+<style>
+/* G-UPLOADER 안에서: 미리보기를 왼쪽에 고정하고 설정을 오른쪽에 두어 같이 보이게 한다 */
+body.gup-embed .wrap{max-width:1720px}
+.gup-split{display:grid;gap:16px}
+.gup-left,.gup-right{display:grid;gap:12px;align-content:start;min-width:0}
+@media (min-width:1000px){
+  body.gup-embed .slide.gup-design{grid-template-columns:minmax(0,1fr);overflow:clip}
+  body.gup-embed .slide.gup-design .lead{grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);column-gap:34px}
+  body.gup-embed .slide.gup-design .lead>*{grid-column:1}
+  body.gup-embed .slide.gup-design .lead>.tpl{grid-column:2;grid-row:1/span 8;align-self:start}
+  body.gup-embed .slide.gup-design .lead::before,body.gup-embed .slide.gup-design .lead::after{display:none}
+  body.gup-embed .slide.gup-design .work{border-left:0;border-top:1px solid rgba(255,255,255,.05)}
+  body.gup-embed .gup-split{grid-template-columns:minmax(0,1.3fr) minmax(400px,1fr);align-items:start;gap:22px}
+  body.gup-embed .gup-left{position:sticky;top:10px;z-index:2}
+  body.gup-embed .gup-left .stage canvas{max-height:calc(100vh - 250px);max-width:100%;width:auto;height:auto}
+}
+</style>
+</head>
+<body>
+<title>거나두잇 썸네일 스튜디오</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Michroma&family=Poppins:wght@200;300;600&family=Noto+Sans+KR:wght@300;400;500;900&family=Black+Han+Sans&family=Do+Hyeon&family=Jua&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@900&family=Nanum+Gothic:wght@800&family=IBM+Plex+Sans+KR:wght@700&family=Gasoek+One&family=Bagel+Fat+One&family=Orbit&family=Noto+Serif+KR:wght@900&family=Nanum+Myeongjo:wght@800&family=Hahmlet:wght@900&family=Song+Myung&family=Gowun+Batang:wght@700&family=Dongle:wght@700&family=Sunflower:wght@700&family=Gaegu:wght@700&family=Cute+Font&family=Single+Day&family=Hi+Melody&family=Nanum+Pen+Script&family=Nanum+Brush+Script&family=Dokdo&family=East+Sea+Dokdo&family=Gamja+Flower&family=Yeon+Sung&family=Kirang+Haerang&family=Poor+Story&family=Gugi&family=Stylish&family=Black+And+White+Picture&family=Moirai+One&family=Diphylleia&display=swap">
+<style>
+/* Layout: 모노크롬 프레젠테이션 — 슬라이드마다 왼쪽은 잘린 대형 번호 + 얇은 제목, 오른쪽은 작업 영역. 헤어라인과 원형 라인으로 구획 */
+:root {
+  --bg: #050506;
+  --slide: #0c0c0e;
+  --slide-2: #16161a;
+  --ink: #f2f2f4;
+  --muted: #8b8b93;
+  --hair: rgba(255,255,255,.18);
+  --hair-strong: rgba(255,255,255,.42);
+  --field: #111114;
+  --ok: #9fe3b8;
+  --warn: #ffb27a;
+  --wide: "Michroma", "Poppins", "Noto Sans KR", sans-serif;
+  --num: "Poppins", "Noto Sans KR", sans-serif;
+  --body: "Noto Sans KR", "Noto Color Emoji", "Poppins", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { background: var(--bg); }
+body { background: radial-gradient(120% 60% at 50% 0%, #1a1a1f 0%, var(--bg) 60%) fixed, var(--bg); color: var(--ink); font-family: var(--body); font-weight: 300; font-size: 15px; line-height: 1.65; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 28px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 28px; }
+
+/* top rule: name ———— handle */
+.topbar { display: flex; align-items: center; gap: 18px; font-family: var(--num); font-weight: 300; font-size: clamp(15px, 2vw, 20px); color: var(--ink); }
+.topbar .rule { flex: 1; height: 1px; background: var(--hair-strong); }
+.topbar .handle { color: var(--muted); }
+
+/* section labels row */
+.labels { display: flex; justify-content: space-between; gap: 12px; font-family: var(--num); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.labels span.on { color: var(--ink); }
+.checker { width: 36px; height: 12px; flex: none; background:
+  conic-gradient(var(--ink) 25%, transparent 0 50%, var(--ink) 0 75%, transparent 0) 0 0 / 6px 6px; opacity: .85; }
+
+/* hero */
+.hero { position: relative; overflow: hidden; background: linear-gradient(180deg, #121215, #070708); border: 1px solid rgba(255,255,255,.06); padding: 26px clamp(18px, 3vw, 30px) 34px; display: grid; gap: 18px; }
+.hero canvas.mesh { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: .9; }
+.hero > *:not(canvas) { position: relative; }
+.orb { justify-self: center; width: clamp(150px, 26vw, 250px); aspect-ratio: 1; border-radius: 50%; margin-block: 6px;
+  background:
+    radial-gradient(circle at 34% 28%, #fff 0 4%, rgba(255,255,255,.0) 12%),
+    radial-gradient(circle at 70% 75%, rgba(255,255,255,.55) 0 3%, transparent 14%),
+    conic-gradient(from 210deg, #050505, #d9d9de, #2b2b30, #f5f5f7, #121214, #8d8d94, #050505);
+  box-shadow: inset 0 0 40px rgba(0,0,0,.9), 0 30px 80px rgba(0,0,0,.8);
+  -webkit-mask: radial-gradient(circle, transparent 30%, #000 31%); mask: radial-gradient(circle, transparent 30%, #000 31%);
+}
+.hero .split { border-top: 1px solid var(--hair); padding-top: 18px; display: flex; align-items: center; gap: 14px; }
+.hero h1 { font-family: var(--wide); font-weight: 400; font-size: clamp(28px, 6vw, 62px); line-height: 1.05; letter-spacing: .04em; margin: 0; text-align: center; text-wrap: balance; }
+.hero p.lede { margin: 0 auto; max-width: 58ch; text-align: center; color: var(--muted); font-size: 14px; }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--hair); }
+.stat { padding: 16px 16px 4px 0; display: grid; gap: 2px; }
+.stat + .stat { padding-left: 16px; border-left: 1px solid var(--hair); }
+.stat b { font-family: var(--wide); font-weight: 400; font-size: clamp(22px, 4vw, 36px); line-height: 1.1; }
+.stat span { font-size: 12px; color: var(--muted); }
+
+/* slides */
+.slide { position: relative; overflow: hidden; background: var(--slide); border: 1px solid rgba(255,255,255,.06); display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
+@media (max-width: 900px) { .slide { grid-template-columns: minmax(0, 1fr); } }
+.lead { position: relative; padding: 22px clamp(18px, 3vw, 34px) 28px; display: grid; align-content: start; gap: 16px; min-width: 0; }
+.lead::before { content: ""; position: absolute; left: clamp(10px, 1.6vw, 18px); top: 92px; bottom: 28px; width: 1px; background: var(--hair); }
+.lead::after { content: ""; position: absolute; left: calc(clamp(10px, 1.6vw, 18px) - 3px); top: 88px; border: 3.5px solid transparent; border-bottom: 5px solid var(--hair-strong); border-top: 0; }
+.num { font-family: var(--num); font-weight: 600; font-size: clamp(96px, 14vw, 168px); line-height: 1; height: .74em; overflow: hidden; letter-spacing: -.02em; border-bottom: 1px solid var(--hair-strong); margin-top: 6px; }
+.lead h2 { font-family: var(--body); font-weight: 300; font-size: clamp(26px, 3.4vw, 38px); line-height: 1.2; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+.lead h2 em { font-style: normal; font-family: var(--num); font-weight: 200; }
+.lead p { margin: 0; font-size: 13.5px; color: #c9c9cf; max-width: 46ch; }
+.lead .tag { font-size: 12px; color: var(--muted); }
+.roles { border-top: 1px solid var(--hair); padding-top: 16px; display: flex; flex-wrap: wrap; gap: 22px; }
+.role { display: grid; justify-items: center; gap: 6px; font-size: 11px; color: #c9c9cf; text-align: center; line-height: 1.3; width: 64px; }
+.role svg { width: 22px; height: 22px; stroke: var(--ink); fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.work { position: relative; padding: 22px clamp(18px, 3vw, 30px) 28px; display: grid; gap: 16px; align-content: start; min-width: 0; background: linear-gradient(160deg, var(--slide-2), var(--slide) 70%); border-left: 1px solid rgba(255,255,255,.05); }
+@media (max-width: 900px) { .work { border-left: 0; border-top: 1px solid var(--hair); } }
+.ring { position: absolute; border-radius: 50%; border: 1px solid var(--hair); pointer-events: none; }
+
+/* controls */
+.drop { position: relative; border: 1px solid var(--hair-strong); padding: 26px 18px; text-align: center; cursor: pointer; display: grid; gap: 4px; justify-items: center; background: rgba(255,255,255,.02); transition: background .15s, border-color .15s; }
+.drop:hover, .drop.over, .drop:focus-within { background: rgba(255,255,255,.06); border-color: var(--ink); }
+.drop strong { font-family: var(--wide); font-weight: 400; font-size: 13px; letter-spacing: .08em; }
+.drop .sub { font-size: 12px; color: var(--muted); }
+.drop input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+video { width: 100%; max-height: 340px; background: #000; display: block; border: 1px solid var(--hair); }
+.meta { display: flex; flex-wrap: wrap; gap: 8px; font-family: var(--num); font-size: 11px; color: var(--muted); letter-spacing: .04em; }
+.chip { border: 1px solid var(--hair-strong); border-radius: 999px; padding: 2px 10px; }
+.chip.on { background: var(--ink); color: #000; border-color: var(--ink); }
+label.f { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 4px; row-gap: 6px; font-family: var(--num); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+label.f .ko { text-transform: none; letter-spacing: 0; font-family: var(--body); }
+textarea, input[type=text], select { width: 100%; font: 400 14px/1.5 var(--body); color: var(--ink); background: var(--field); border: 0; border-bottom: 1px solid var(--hair-strong); border-radius: 0; padding: 9px 2px; letter-spacing: 0; text-transform: none; }
+select { padding-right: 18px; }
+select option { background: #111; }
+textarea { resize: vertical; min-height: 64px; padding: 9px 10px; }
+textarea:focus, input:focus, select:focus { outline: none; border-bottom-color: var(--ink); background: #18181c; }
+button:focus-visible, .drop:focus-within { outline: 1px solid var(--ink); outline-offset: 2px; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+button { font: 400 13px var(--body); cursor: pointer; border-radius: 999px; border: 1px solid var(--hair-strong); background: transparent; color: var(--ink); padding: 8px 16px; }
+button:hover:not(:disabled) { border-color: var(--ink); background: rgba(255,255,255,.06); }
+button:disabled { opacity: .4; cursor: not-allowed; }
+.primary { background: var(--ink); color: #000; border-color: var(--ink); font-family: var(--wide); font-size: 12px; letter-spacing: .08em; padding: 12px 22px; }
+.primary:hover:not(:disabled) { background: #fff; color: #000; }
+.status { font-size: 13px; color: var(--muted); min-height: 1.4em; margin: 0; }
+.status.err { color: var(--warn); }
+.status.ok { color: var(--ok); }
+
+.frames { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.frames .fr { position: relative; min-width: 0; }
+.frames .shot { padding: 0; border-radius: 0; border: 1px solid var(--hair); overflow: hidden; position: relative; background: #000; aspect-ratio: 16/9; width: 100%; display: block; }
+.frames .shot.sel { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.frames .fr.picking .shot { border-color: #ff3df0; box-shadow: inset 0 0 0 1px #ff3df0; }
+.frames .swap { position: absolute; top: 4px; right: 4px; font-size: 10.5px; line-height: 1; padding: 5px 8px; background: rgba(0,0,0,.78); color: #fff; border: 1px solid rgba(255,255,255,.5); border-radius: 999px; }
+.frames .swap:hover:not(:disabled) { background: #fff; color: #000; }
+@media (hover: hover) { .frames .swap { opacity: 0; transition: opacity .15s; } .frames .fr:hover .swap, .frames .swap:focus-visible, .frames .fr.picking .swap { opacity: 1; } }
+.frames .rep { position: absolute; left: 4px; top: 4px; font-family: var(--num); font-size: 9px; letter-spacing: .08em; background: #ff3df0; color: #000; padding: 1px 5px; pointer-events: none; }
+.frames .no { position: absolute; right: 4px; bottom: 3px; font-family: var(--num); font-size: 10px; color: #fff; background: rgba(0,0,0,.75); padding: 0 4px; pointer-events: none; }
+.photo-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; border-top: 1px solid var(--hair); padding-top: 14px; }
+.photo-head h3 { margin: 0; font-family: var(--num); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; font-weight: 400; }
+.photo-head .ko { text-transform: none; letter-spacing: 0; font-family: var(--body); color: var(--muted); }
+.frames.photos .shot { background: #111; }
+.upl-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.addbtn { position: relative; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; border-radius: 999px; border: 1px solid var(--hair-strong); padding: 8px 16px; font-size: 13px; }
+.addbtn:hover, .addbtn:focus-within { border-color: var(--ink); background: rgba(255,255,255,.06); }
+.addbtn:focus-within { outline: 1px solid var(--ink); outline-offset: 2px; }
+.addbtn input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.addbtn svg { width: 16px; height: 16px; stroke: var(--ink); fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.frame-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.frame-bar .hint { flex: 1 1 220px; }
+.picker { border: 1px solid #ff3df0; padding: 14px; display: grid; gap: 12px; background: rgba(255,61,240,.04); min-width: 0; }
+.picker h3 { margin: 0; font-family: var(--num); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink); font-weight: 400; }
+.picker .ko { text-transform: none; letter-spacing: 0; font-family: var(--body); }
+.pk-view { display: grid; justify-items: center; background: #000; border: 1px solid var(--hair); }
+.pk-view canvas { max-width: 100%; max-height: 320px; width: auto; height: auto; display: block; }
+.picker input[type=range] { width: 100%; accent-color: #ff3df0; margin: 0; height: 24px; }
+.pk-nudge { display: flex; flex-wrap: wrap; gap: 6px; }
+.pk-nudge button { font-family: var(--num); font-size: 12px; padding: 5px 11px; }
+.pk-cands { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+@media (max-width: 560px) { .pk-cands { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.pk-cands button { padding: 0; border-radius: 0; border: 1px solid var(--hair); background: #000; position: relative; overflow: hidden; aspect-ratio: 16/9; }
+.pk-cands button.on { border-color: #ff3df0; box-shadow: inset 0 0 0 1px #ff3df0; }
+.pk-cands canvas { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pk-cands .tc { position: absolute; left: 3px; bottom: 2px; font-family: var(--num); font-size: 9.5px; background: rgba(0,0,0,.75); color: #fff; padding: 0 3px; }
+.pk-cands .wait { grid-column: 1 / -1; font-size: 12px; color: var(--muted); padding: 8px 0; }
+.frames img { width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(.9); }
+.frames .tc { position: absolute; left: 4px; bottom: 3px; font-family: var(--num); font-size: 10px; background: rgba(0,0,0,.75); color: #fff; padding: 0 4px; }
+.seg { display: inline-flex; border: 1px solid var(--hair-strong); border-radius: 999px; overflow: hidden; }
+.seg button { border: 0; border-radius: 0; padding: 7px 14px; font-family: var(--num); font-size: 12px; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: #000; }
+.stage { display: grid; justify-items: center; padding: 14px; border: 1px solid var(--hair); background: repeating-linear-gradient(45deg, rgba(255,255,255,.025) 0 2px, transparent 2px 9px); }
+.stage canvas { max-width: 100%; height: auto; display: block; box-shadow: 0 20px 60px rgba(0,0,0,.7); }
+.stage.tall canvas { max-height: 520px; width: auto; }
+.ctrls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 18px; }
+@media (max-width: 480px) { .ctrls { grid-template-columns: minmax(0, 1fr); } }
+.fallback img { max-width: 100%; }
+.hint { color: var(--muted); font-size: 12px; margin: 0; }
+
+/* tabs */
+.tabs { display: flex; gap: 8px; }
+.tabs button[aria-selected="true"] { background: var(--ink); color: #000; border-color: var(--ink); }
+.bh { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.count { font-family: var(--num); font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.copy { font-size: 12px; padding: 4px 12px; }
+/* thumbnail editor */
+.stage canvas { touch-action: none; cursor: default; }
+.stage canvas:focus-visible { outline: 1px solid var(--ink); outline-offset: 3px; }
+.editor { border: 1px solid var(--hair); padding: 16px; display: grid; gap: 14px; background: rgba(255,255,255,.02); min-width: 0; }
+.ed-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.ed-head h3 { margin: 0; font-family: var(--wide); font-weight: 400; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; }
+.ed-head h3 .ko { font-family: var(--body); letter-spacing: 0; color: var(--muted); font-size: 12px; text-transform: none; }
+.ed-head .tabs { flex-wrap: wrap; }
+.ed-head #edReset { margin-left: auto; }
+.ed-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 22px; }
+@media (max-width: 520px) { .ed-grid { grid-template-columns: minmax(0, 1fr); } }
+.rng { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 8px; align-items: baseline; min-width: 0; }
+.rng label { font-size: 12px; color: #c9c9cf; }
+.rng output { font-family: var(--num); font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.rng input[type=range] { grid-column: 1 / -1; width: 100%; accent-color: var(--ink); margin: 0; height: 22px; }
+.ed-colors { display: flex; flex-wrap: wrap; gap: 10px 18px; border-top: 1px solid var(--hair); padding-top: 12px; }
+.sw, .ck { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: #c9c9cf; cursor: pointer; }
+.sw input[type=color] { width: 28px; height: 28px; padding: 0; border: 1px solid var(--hair-strong); border-radius: 50%; background: none; cursor: pointer; overflow: hidden; }
+.sw input[type=color]::-webkit-color-swatch-wrapper { padding: 0; }
+.sw input[type=color]::-webkit-color-swatch { border: 0; border-radius: 50%; }
+.ck input { accent-color: var(--ink); width: 16px; height: 16px; }
+.ed-fonts { display: grid; gap: 10px; border-top: 1px solid var(--hair); padding-top: 12px; min-width: 0; }
+.ed-fonts h4 { margin: 0; font-size: 12px; font-weight: 500; color: #c9c9cf; }
+.fchips { display: flex; flex-wrap: wrap; gap: 6px; }
+.fchips button { font-size: 11px; padding: 4px 10px; }
+.fchips button[aria-pressed="true"] { background: var(--ink); color: #000; border-color: var(--ink); }
+.fgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 6px; max-height: 280px; overflow-y: auto; padding-right: 4px; }
+.ftile { border-radius: 4px; padding: 10px 8px 8px; display: grid; gap: 4px; justify-items: start; text-align: left; min-width: 0; }
+.ftile .fs { font-size: 19px; line-height: 1.2; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.ftile .fn { font-size: 10.5px; color: var(--muted); }
+.ftile[aria-pressed="true"] { border-color: var(--ink); background: rgba(255,255,255,.1); box-shadow: inset 0 0 0 1px var(--ink); }
+/* templates + layers */
+.tpl { display: grid; gap: 10px; border-top: 1px solid var(--hair); padding-top: 16px; }
+.tpl-h { margin: 0; font-family: var(--num); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; font-weight: 400; color: var(--ink); }
+.tpl-h .ko { text-transform: none; letter-spacing: 0; font-family: var(--body); color: var(--muted); }
+.tpl-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.tpl-card { border-radius: 4px; text-align: left; display: grid; gap: 2px; padding: 10px 12px; min-width: 0; }
+.tpl-card b { font-weight: 500; font-size: 13.5px; }
+.tpl-card span { font-size: 11.5px; color: var(--muted); line-height: 1.4; }
+.tpl-card[aria-pressed="true"] { border-color: var(--ink); background: rgba(255,255,255,.08); box-shadow: inset 0 0 0 1px var(--ink); }
+.ed-head .row button { font-size: 12px; padding: 6px 12px; }
+.layers { display: grid; gap: 4px; }
+.ly { display: flex; align-items: center; gap: 6px; border: 1px solid var(--hair); border-radius: 4px; padding: 4px 6px 4px 4px; min-width: 0; background: rgba(255,255,255,.015); }
+.ly.on { border-color: #ff3df0; background: rgba(255,61,240,.07); }
+.ly.off .ly-text { opacity: .45; text-decoration: line-through; }
+.ly.bg { border-style: dashed; }
+.ly-main { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; border: 0; border-radius: 0; padding: 4px; background: none; text-align: left; }
+.ly-main:hover:not(:disabled) { background: none; }
+.ly-chip { width: 30px; height: 30px; flex: none; display: grid; place-items: center; border: 1px solid var(--hair-strong); border-radius: 4px; font-size: 17px; line-height: 1; text-shadow: 0 1px 3px rgba(0,0,0,.8); }
+.ly-chip.img { color: var(--muted); font-size: 15px; }
+.ly-text { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13.5px; font-weight: 400; }
+.ly-kind { font-family: var(--num); font-size: 10px; letter-spacing: .06em; color: var(--muted); border: 1px solid var(--hair); border-radius: 999px; padding: 1px 8px; flex: none; }
+.ly-tools { display: flex; gap: 3px; flex: none; }
+.lyb { font-size: 11px; padding: 4px 8px; min-width: 30px; }
+@media (max-width: 520px) { .ly { flex-wrap: wrap; } .ly-tools { width: 100%; justify-content: flex-end; } }
+.ed-body { display: grid; gap: 0; }
+.ed-sec { display: grid; gap: 10px; border-top: 1px solid var(--hair); padding-block: 14px; min-width: 0; }
+.ed-sec h4 { margin: 0; font-size: 12px; font-weight: 500; color: var(--ink); letter-spacing: .02em; }
+.ed-sec textarea { min-height: 54px; font-size: 15px; }
+.ed-sec .seg button { font-size: 12px; }
+.swatches { display: flex; flex-wrap: wrap; gap: 6px; }
+.swatch { width: 26px; height: 26px; padding: 0; border-radius: 50%; border: 1px solid var(--hair-strong); }
+.swatch[aria-pressed="true"] { outline: 2px solid #ff3df0; outline-offset: 2px; }
+.credit { text-align: right; font-size: 11px; color: var(--muted); font-family: var(--num); letter-spacing: .06em; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></symbol>
+  <symbol id="i-frame" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 9h18M8 5v4M16 5v4"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="2.6"/></symbol>
+  <symbol id="i-type" viewBox="0 0 24 24"><path d="M5 6V4h14v2M12 4v16M9 20h6"/></symbol>
+  <symbol id="i-shape" viewBox="0 0 24 24"><circle cx="7" cy="16" r="4"/><rect x="13" y="12" width="8" height="8"/><path d="M12 3l4 6H8z"/></symbol>
+  <symbol id="i-swap" viewBox="0 0 24 24"><path d="M4 8h13l-3-3M20 16H7l3 3"/></symbol>
+  <symbol id="i-photo" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 8"/></symbol>
+  <symbol id="i-video" viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="1"/><path d="M16 10l5-3v10l-5-3"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M4 20h16"/></symbol>
+</svg>
+
+<div class="wrap">
+  <div class="topbar"><span>거나두잇 Thumbnail Studio</span><span class="rule"></span><span class="handle">YouTube Thumbnail Maker</span></div>
+
+  <section class="hero" aria-labelledby="h-hero">
+    <canvas class="mesh" id="mesh" aria-hidden="true"></canvas>
+    <div class="labels"><span>Upload</span><span>Scene</span><span>Design</span><span>Save</span></div>
+    <div class="orb" aria-hidden="true"></div>
+    <div class="split"><span class="checker"></span><span class="rule" style="flex:1"></span><span class="checker"></span></div>
+    <h1 id="h-hero">VIDEO TO<br>THUMBNAIL</h1>
+    <p class="lede">영상을 올리면 장면 8장을 자동으로 뽑고, 직접 고른 사진도 바로 올릴 수 있어요. 마음에 드는 장면이나 사진을 골라 문구를 얹고, 위치·크기·글꼴을 다듬어 썸네일 PNG로 저장하세요. 영상과 사진은 이 브라우저 안에서만 처리되고 어디에도 올라가지 않아요.</p>
+    <div class="stats">
+      <div class="stat"><b>08</b><span>영상에서 뽑는 장면 수</span></div>
+      <div class="stat"><b>34</b><span>썸네일 글꼴</span></div>
+      <div class="stat"><b>2</b><span>비율 · 16:9 롱폼 / 9:16 숏츠</span></div>
+    </div>
+  </section>
+
+  <!-- 01 UPLOAD -->
+  <section class="slide" aria-labelledby="h-up">
+    <div class="lead">
+      <div class="labels"><span class="on">Upload</span><span class="on">Scene</span><span>Design</span></div>
+      <div class="num" aria-hidden="true">01</div>
+      <h2 id="h-up">영상과 장면<br><em>Upload &amp; Pick Scene</em></h2>
+      <p>숏츠(세로)와 롱폼(가로) 영상 모두 넣을 수 있어요. 영상 전체에서 장면 8장을 고르게 뽑고, 하나씩 다른 장면으로 바꾸거나 전체를 다시 뽑을 수 있어요. 직접 찍거나 고른 사진도 여러 장 올릴 수 있어요. 고른 장면이나 사진이 썸네일 배경이 돼요.</p>
+      <span class="tag">영상 MP4 · WebM · MOV / 사진 JPG · PNG · WEBP</span>
+      <div class="roles">
+        <div class="role"><svg><use href="#i-video"/></svg>영상<br>업로드</div>
+        <div class="role"><svg><use href="#i-photo"/></svg>사진<br>업로드</div>
+        <div class="role"><svg><use href="#i-frame"/></svg>장면<br>추출</div>
+        <div class="role"><svg><use href="#i-swap"/></svg>장면<br>교체</div>
+      </div>
+    </div>
+    <div class="work">
+      <label class="drop" id="drop">
+        <input type="file" id="file" accept="video/*,image/*" multiple>
+        <strong>DROP VIDEO OR PHOTO</strong>
+        <span class="sub">영상이나 사진을 선택하거나 끌어다 놓으세요 · 사진은 여러 장 한 번에 가능</span>
+      </label>
+      <div class="upl-row">
+        <label class="addbtn" for="photoFile"><svg><use href="#i-photo"/></svg>사진만 추가하기<input type="file" id="photoFile" accept="image/*" multiple></label>
+        <span class="hint">휴대폰 사진(HEIC)이 안 열리면 JPG로 바꿔서 올려 주세요.</span>
+      </div>
+      <video id="video" controls playsinline muted hidden></video>
+      <div class="meta" id="meta" hidden></div>
+      <p class="status" id="status" role="status">영상을 올리면 장면 8장을 자동으로 뽑아요.</p>
+      <div class="frame-bar" id="frameBar" hidden>
+        <p class="hint">장면을 누르면 썸네일 배경이 돼요. 마음에 안 드는 장면은 <b>바꾸기</b>를 눌러 다른 장면으로 교체하세요.</p>
+        <div class="row"><button id="useCurrent" hidden>지금 영상 화면을 배경으로</button><button id="reshuffle">전체 다른 위치로 다시 뽑기</button></div>
+      </div>
+      <div class="frames" id="frames" hidden></div>
+      <div class="picker" id="picker" hidden>
+        <div class="bh"><h3 id="pkTitle">장면 바꾸기</h3><span class="count" id="pkTime">00:00.0</span></div>
+        <div class="pk-view"><canvas id="pkView" width="640" height="360" aria-label="고른 시점의 장면 미리보기"></canvas></div>
+        <input type="range" id="pkRange" min="0" max="1" step="0.05" value="0" aria-label="장면 시간 고르기">
+        <div class="pk-nudge" role="group" aria-label="시간 미세 조정">
+          <button data-d="-5">−5초</button><button data-d="-1">−1초</button><button data-d="-0.2">−0.2초</button>
+          <button data-d="0.2">+0.2초</button><button data-d="1">+1초</button><button data-d="5">+5초</button>
+        </div>
+        <div class="bh"><h3>Candidates <span class="ko">· 이 구간의 후보 장면</span></h3><button id="pkMore" class="copy">후보 다시 뽑기</button></div>
+        <div class="pk-cands" id="pkCands"></div>
+        <div class="row"><button class="primary" id="pkApply">이 장면으로 교체</button><button id="pkCancel">취소</button></div>
+      </div>
+      <p class="status" id="frameStatus" role="status"></p>
+      <div class="photo-head" id="photoHead" hidden><h3>My Photos <span class="ko">· 내 사진</span></h3><span class="count" id="photoCount"></span></div>
+      <div class="frames photos" id="photos" hidden></div>
+      <p class="status" id="photoStatus" role="status"></p>
+    </div>
+  </section>
+
+  <!-- 02 THUMBNAIL -->
+  <section class="slide" aria-labelledby="h-th">
+    <div class="lead">
+      <div class="labels"><span>Upload</span><span class="on">Design</span><span class="on">Save</span></div>
+      <div class="num" aria-hidden="true">02</div>
+      <h2 id="h-th">썸네일 디자인<br><em>Thumbnail Design</em></h2>
+      <p>템플릿으로 시작한 뒤, 오른쪽 레이어 목록에서 라벨·지역명·제목 한 줄 한 줄을 따로 골라 글꼴, 크기, 색, 그림자, 박스를 다듬으세요. 문구와 라벨은 원하는 만큼 추가할 수 있어요.</p>
+      <span class="tag">1280×720 · 1080×1920</span>
+      <div class="roles">
+        <div class="role"><svg><use href="#i-frame"/></svg>장면<br>선택</div>
+        <div class="role"><svg><use href="#i-type"/></svg>레이어<br>편집</div>
+        <div class="role"><svg><use href="#i-shape"/></svg>스타일<br>배치</div>
+        <div class="role"><svg><use href="#i-save"/></svg>PNG<br>저장</div>
+      </div>
+      <div class="tpl">
+        <h3 class="tpl-h">Templates <span class="ko">· 템플릿</span></h3>
+        <div class="tpl-list" id="tplList"></div>
+        <p class="status" id="tplStatus" role="status"></p>
+      </div>
+    </div>
+    <div class="work">
+      <div class="row">
+        <div class="seg" role="group" aria-label="썸네일 비율">
+          <button id="fmt-long" aria-pressed="true">16:9 LONG</button>
+          <button id="fmt-short" aria-pressed="false">9:16 SHORTS</button>
+        </div>
+      </div>
+      <div class="stage" id="stage"><canvas id="thumb" width="1280" height="720" aria-label="썸네일 미리보기"></canvas></div>
+      <section class="editor" aria-labelledby="h-ed">
+        <div class="ed-head">
+          <h3 id="h-ed">Layers <span class="ko">· 레이어</span></h3>
+          <div class="row">
+            <button id="addText">+ 문구</button>
+            <button id="addPill">+ 라벨</button>
+            <button id="undo" title="Ctrl+Z">되돌리기</button>
+            <button id="redo" title="Ctrl+Shift+Z">다시 실행</button>
+            <button id="edReset">템플릿 처음 상태로</button>
+          </div>
+        </div>
+        <p class="hint">위에 있는 레이어일수록 앞에 보여요. 미리보기에서 글자를 끌어 옮기면 화면 가운데나 다른 문구의 왼쪽 끝에 맞춰 분홍 선이 나오며 딱 붙어요. 미리보기를 누른 뒤 방향키 1px, Shift+방향키 10px, Delete로 레이어 삭제.</p>
+        <div class="layers" id="layers"></div>
+        <div id="edBody" class="ed-body"></div>
+      </section>
+      <div class="row">
+        <button class="primary" id="save">SAVE PNG</button>
+      </div>
+      <p class="status" id="saveStatus" role="status"></p>
+      <div class="fallback" id="fallback" hidden>
+        <p class="hint">저장 창이 열리지 않으면 아래 이미지를 길게 누르거나 우클릭해서 저장하세요.</p>
+        <img id="fallbackImg" alt="저장용 썸네일">
+      </div>
+    </div>
+  </section>
+
+  <div class="credit">거나두잇 Thumbnail Studio · 1280×720 · 1080×1920 · PNG</div>
+</div>
+
+<script>
+/* hero wireframe mesh — static drawing, redrawn on resize */
+(() => {
+  const c = document.getElementById("mesh"); if (!c) return;
+  const draw = () => {
+    const r = c.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1);
+    c.width = r.width * d; c.height = r.height * d;
+    const g = c.getContext("2d"); g.scale(d, d);
+    const W = r.width, H = r.height;
+    g.strokeStyle = "rgba(255,255,255,.10)"; g.lineWidth = 0.7;
+    // two big circle outlines
+    [[W * .25, H * .42, H * .55], [W * .72, H * .42, H * .5]].forEach(([x, y, rad]) => { g.beginPath(); g.arc(x, y, rad, 0, Math.PI * 2); g.stroke(); });
+    // wire waves bottom-left and top-right
+    const wave = (ox, oy, w, h, flip) => {
+      for (let k = 0; k < 26; k++) {
+        g.beginPath();
+        for (let i = 0; i <= 60; i++) {
+          const t = i / 60, x = ox + t * w;
+          const y = oy + flip * (Math.sin(t * 3.4 + k * .22) * h * .35 * (1 - t * .5) + k * h * .025 - Math.cos(t * 6 + k * .1) * h * .08);
+          i ? g.lineTo(x, y) : g.moveTo(x, y);
+        }
+        g.strokeStyle = `rgba(255,255,255,${.04 + .1 * Math.sin(k / 26 * Math.PI)})`;
+        g.stroke();
+      }
+    };
+    wave(-W * .05, H * .78, W * .5, H * .5, 1);
+    wave(W * .55, H * .12, W * .5, H * .4, -1);
+  };
+  draw(); addEventListener("resize", draw);
+})();
+</script>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const FRAME_COUNT = 8;
+  const state = {
+    frames: [],        // {t, canvas, blob, url}
+    sel: -1,           // selected frame index, -1 = custom/current or none
+    custom: null,      // canvas from "use current"
+    fmt: "long",
+    duration: 0,
+    vertical: false,
+    photos: [],        // {name, canvas, url}
+    photoSel: -1       // used when sel === -3
+  };
+
+  /* ---------- helpers ---------- */
+  const fmtTime = (s) => {
+    s = Math.max(0, Math.floor(s));
+    const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+    const p = (n) => String(n).padStart(2, "0");
+    return h ? `${h}:${p(m)}:${p(sec)}` : `${p(m)}:${p(sec)}`;
+  };
+  const setStatus = (el, text, kind) => { el.textContent = text; el.className = "status" + (kind ? " " + kind : ""); };
+  /* ---------- thumbnail ---------- */
+  const cv = $("thumb"), ctx = cv.getContext("2d");
+  function bgSource() {
+    if (state.sel === -2 && state.custom) return state.custom;
+    if (state.sel === -3 && state.photos[state.photoSel]) return state.photos[state.photoSel].canvas;
+    if (state.sel >= 0 && state.frames[state.sel]) return state.frames[state.sel].canvas;
+    return null;
+  }
+  const FONTS = [
+    ["Pretendard", "프리텐다드 ExtraBold", 800, "굵은 고딕"],
+    ["Black Han Sans", "검은고딕", 400, "굵은 고딕"],
+    ["Do Hyeon", "도현", 400, "굵은 고딕"],
+    ["Noto Sans KR", "본고딕 Black", 900, "굵은 고딕"],
+    ["Gothic A1", "고딕 A1 Black", 900, "굵은 고딕"],
+    ["Nanum Gothic", "나눔고딕 ExtraBold", 800, "굵은 고딕"],
+    ["IBM Plex Sans KR", "플렉스 산스 Bold", 700, "굵은 고딕"],
+    ["Gasoek One", "가석", 400, "굵은 고딕"],
+    ["Bagel Fat One", "베이글 팻", 400, "굵은 고딕"],
+    ["Orbit", "오르빗", 400, "굵은 고딕"],
+    ["Noto Serif KR", "본명조 Black", 900, "명조"],
+    ["Nanum Myeongjo", "나눔명조 ExtraBold", 800, "명조"],
+    ["Hahmlet", "함렡 Black", 900, "명조"],
+    ["Song Myung", "송명", 400, "명조"],
+    ["Gowun Batang", "고운바탕 Bold", 700, "명조"],
+    ["Jua", "주아", 400, "둥글고 귀여운"],
+    ["Dongle", "동글 Bold", 700, "둥글고 귀여운"],
+    ["Sunflower", "해바라기 Bold", 700, "둥글고 귀여운"],
+    ["Gaegu", "개구 Bold", 700, "둥글고 귀여운"],
+    ["Cute Font", "귀여운 글꼴", 400, "둥글고 귀여운"],
+    ["Single Day", "싱글데이", 400, "둥글고 귀여운"],
+    ["Hi Melody", "하이멜로디", 400, "둥글고 귀여운"],
+    ["Nanum Pen Script", "나눔손글씨 펜", 400, "손글씨·붓"],
+    ["Nanum Brush Script", "나눔손글씨 붓", 400, "손글씨·붓"],
+    ["Dokdo", "독도", 400, "손글씨·붓"],
+    ["East Sea Dokdo", "동해 독도", 400, "손글씨·붓"],
+    ["Gamja Flower", "감자꽃", 400, "손글씨·붓"],
+    ["Yeon Sung", "연성", 400, "손글씨·붓"],
+    ["Kirang Haerang", "기랑해랑", 400, "손글씨·붓"],
+    ["Poor Story", "푸어 스토리", 400, "손글씨·붓"],
+    ["Gugi", "구기", 400, "개성 있는"],
+    ["Stylish", "스타일리시", 400, "개성 있는"],
+    ["Black And White Picture", "흑백사진", 400, "개성 있는"],
+    ["Moirai One", "모이라이", 400, "개성 있는"],
+    ["Diphylleia", "디필레이아", 400, "개성 있는"]
+  ];
+  /* ---------- layer engine: every text (badge, caption, each headline line) is its own layer ---------- */
+  const fontWeight = (f) => { const e = FONTS.find((x) => x[0] === f); return e && e[2] !== 400 ? e[2] + " " : ""; };
+  const fontStr = (f, size) => `${fontWeight(f)}${size}px "${f}", "Noto Sans KR", "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", sans-serif`;
+  let uid = 0;
+  const newId = () => "L" + (++uid);
+  const mkLayer = (o) => ({
+    id: newId(), text: "새 문구", font: "Noto Sans KR", size: 10, x: 5, y: 40, align: "left", rot: 0, ls: 0, lh: 112,
+    fill: "#ffffff", stroke: "#000000", sw: 0, shadow: 60, boxOn: false, box: "#000000", boxOp: 100, boxRad: 0, boxPad: 30, show: true, ...o
+  });
+  const bgDefaults = () => ({ zoom: 100, x: 0, y: 0, bright: 100, contrast: 100, sat: 100, warm: 0, sharp: 0, vig: 0, blur: 0, shadeDir: "left", shadeAmt: 55 });
+
+  const TEMPLATES = [
+    { key: "travel", name: "여행 에피소드", desc: "라벨 + 지역 + 두 줄 제목 (흰색/노랑)",
+      make: () => ({ bg: { ...bgDefaults(), shadeDir: "left", shadeAmt: 62 }, layers: [
+        mkLayer({ text: "ep.2", size: 5.2, x: 5, y: 8, shadow: 0, boxOn: true, box: "#000000", boxOp: 58, boxRad: 100, boxPad: 60 }),
+        mkLayer({ text: "베트남 하노이 🇻🇳", size: 7, x: 5, y: 21, shadow: 75 }),
+        mkLayer({ text: "익숙한 냄새", size: 15.5, x: 4.6, y: 35, ls: -3, shadow: 85 }),
+        mkLayer({ text: "낯선 공기", size: 15.5, x: 4.6, y: 58, ls: -3, shadow: 85, fill: "#ffd21f" })
+      ] }) },
+    { key: "band", name: "강조 띠", desc: "빨강 띠 부제 + 흰 글자 검정 테두리", make: () => ({ bg: { ...bgDefaults(), shadeDir: "left", shadeAmt: 35 }, layers: [
+        mkLayer({ text: "39.5도 5일간의 기록", font: "Black Han Sans", size: 7, x: 5, y: 20, shadow: 0, boxOn: true, box: "#e5191f", boxPad: 35 }),
+        mkLayer({ text: "A형 독감", font: "Black Han Sans", size: 17, x: 5, y: 35, sw: 16, shadow: 40 }),
+        mkLayer({ text: "죽다 살아남", font: "Black Han Sans", size: 17, x: 5, y: 60, sw: 16, shadow: 40 })
+      ] }) },
+    { key: "impact", name: "노랑 임팩트", desc: "가운데 큰 노랑 글자 + 검정 테두리", make: () => ({ bg: { ...bgDefaults(), shadeDir: "full", shadeAmt: 30 }, layers: [
+        mkLayer({ text: "이건 몰랐지?", font: "Black Han Sans", size: 9, x: 50, y: 22, align: "center", shadow: 0, fill: "#000000", boxOn: true, box: "#ffffff", boxPad: 35 }),
+        mkLayer({ text: "여기에 큰 제목", font: "Black Han Sans", size: 21, x: 50, y: 40, align: "center", fill: "#ffd400", sw: 18, shadow: 50 })
+      ] }) },
+    { key: "caption", name: "아래 자막형", desc: "하단 검정 박스 자막 + 작은 라벨", make: () => ({ bg: { ...bgDefaults(), shadeDir: "bottom", shadeAmt: 45 }, layers: [
+        mkLayer({ text: "VLOG", font: "Noto Sans KR", size: 5, x: 50, y: 58, align: "center", shadow: 0, fill: "#000000", boxOn: true, box: "#ffd21f", boxRad: 100, boxPad: 60 }),
+        mkLayer({ text: "오늘 하루 정리", font: "Noto Sans KR", size: 12, x: 50, y: 70, align: "center", shadow: 0, boxOn: true, box: "#000000", boxOp: 82, boxRad: 18, boxPad: 40 })
+      ] }) },
+    { key: "blank", name: "빈 캔버스", desc: "문구 하나로 시작", make: () => ({ bg: { ...bgDefaults(), shadeAmt: 30 }, layers: [
+        mkLayer({ text: "문구를 입력하세요", size: 12, x: 5, y: 40 })
+      ] }) }
+  ];
+
+  const ED = { layers: [], bg: bgDefaults() };
+  let edLayer = "bg";
+  let hitBoxes = {};
+  let guides = [];
+  let fontGroup = "전체";
+  const layerById = (id) => ED.layers.find((l) => l.id === id);
+
+  function applyTemplate(key) {
+    const t = TEMPLATES.find((x) => x.key === key) || TEMPLATES[0];
+    const o = t.make();
+    ED.layers = o.layers; ED.bg = { ...o.bg, zoom: ED.bg.zoom, x: ED.bg.x, y: ED.bg.y, bright: ED.bg.bright, blur: ED.bg.blur, contrast: ED.bg.contrast ?? 100, sat: ED.bg.sat ?? 100, warm: ED.bg.warm ?? 0, sharp: ED.bg.sharp ?? 0, vig: ED.bg.vig ?? 0 };
+    edLayer = ED.layers[ED.layers.length - 1].id;
+    renderTemplates(key);
+    renderEditor(); redraw();
+  }
+  function renderTemplates(active) {
+    const box = $("tplList"); box.replaceChildren();
+    TEMPLATES.forEach((t) => {
+      const b = document.createElement("button");
+      b.className = "tpl-card"; b.setAttribute("aria-pressed", t.key === active);
+      const n = document.createElement("b"); n.textContent = t.name;
+      const d = document.createElement("span"); d.textContent = t.desc;
+      b.append(n, d);
+      b.onclick = () => { applyTemplate(t.key); setStatus($("tplStatus"), `"${t.name}" 템플릿을 적용했어요. 되돌리기로 이전 상태로 돌아갈 수 있어요.`, "ok"); };
+      box.append(b);
+    });
+  }
+
+  /* ---------- undo / redo (snapshots of layers + background) ---------- */
+  const hist = { stack: [], i: -1, t: null };
+  const snap = () => JSON.stringify({ layers: ED.layers, bg: ED.bg });
+  function commitNow() {
+    clearTimeout(hist.t);
+    const s = snap();
+    if (hist.stack[hist.i] === s) return;
+    hist.stack = hist.stack.slice(0, hist.i + 1);
+    hist.stack.push(s);
+    if (hist.stack.length > 80) hist.stack.shift();
+    hist.i = hist.stack.length - 1;
+    updUndo();
+  }
+  const commit = () => { clearTimeout(hist.t); hist.t = setTimeout(commitNow, 350); };
+  function restore(s) {
+    const o = JSON.parse(s);
+    ED.layers = o.layers; ED.bg = o.bg;
+    if (edLayer !== "bg" && !layerById(edLayer)) edLayer = ED.layers.length ? ED.layers[ED.layers.length - 1].id : "bg";
+    renderTemplates(""); setStatus($("tplStatus"), "");
+    renderEditor(); redraw(); updUndo();
+  }
+  function undo() { commitNow(); if (hist.i <= 0) return; hist.i--; restore(hist.stack[hist.i]); }
+  function redo() { if (hist.i >= hist.stack.length - 1) return; hist.i++; restore(hist.stack[hist.i]); }
+  function updUndo() { $("undo").disabled = hist.i <= 0; $("redo").disabled = hist.i >= hist.stack.length - 1; }
+  $("undo").onclick = undo; $("redo").onclick = redo;
+  document.addEventListener("keydown", (e) => {
+    const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName) && document.activeElement.type !== "range";
+    if (typing || !(e.ctrlKey || e.metaKey)) return;
+    if (e.key.toLowerCase() === "z") { e.preventDefault(); e.shiftKey ? redo() : undo(); }
+    else if (e.key.toLowerCase() === "y") { e.preventDefault(); redo(); }
+  });
+
+  /* ---------- drawing ---------- */
+  function drawCover(src) {
+    const W = cv.width, H = cv.height, B = ED.bg;
+    const s = Math.max(W / src.width, H / src.height) * B.zoom / 100;
+    const dw = src.width * s, dh = src.height * s;
+    ctx.drawImage(src, (W - dw) / 2 + B.x / 100 * W, (H - dh) / 2 + B.y / 100 * H, dw, dh);
+  }
+  const fontsLoaded = new Set();
+  async function ensureFont(font) {
+    const w = fontWeight(font), k = w + font;
+    if (fontsLoaded.has(k)) return;
+    try { await document.fonts.load(`${w}80px "${font}"`, "가나다AB"); } catch {}
+    fontsLoaded.add(k);
+  }
+  function roundRect(x, y, w, h, r) {
+    r = Math.max(0, Math.min(r, h / 2, w / 2));
+    ctx.beginPath();
+    ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function drawLayer(L, clean) {
+    const W = cv.width, H = cv.height, base = Math.min(W, H);
+    const size = Math.max(6, L.size / 100 * base);
+    ctx.save();
+    ctx.font = fontStr(L.font, size);
+    if ("letterSpacing" in ctx) ctx.letterSpacing = (L.ls * size / 100) + "px";
+    const lines = String(L.text).split("\n");
+    const widths = lines.map((l) => ctx.measureText(l).width);
+    const bw = Math.max(1, ...widths), lh = size * L.lh / 100, bh = (lines.length - 1) * lh + size * 1.15;
+    const ax = L.x / 100 * W, ay = L.y / 100 * H;
+    const bx = L.align === "left" ? ax : L.align === "right" ? ax - bw : ax - bw / 2;
+    const cx = bx + bw / 2, cy = ay + bh / 2;
+    const pad = L.boxOn ? size * L.boxPad / 100 : 0;
+    hitBoxes[L.id] = { x: bx - pad, y: ay - pad * 0.35, w: bw + pad * 2, h: bh + pad * 0.7, cx, cy, left: bx, right: bx + bw };
+    ctx.translate(cx, cy); ctx.rotate(L.rot * Math.PI / 180); ctx.translate(-cx, -cy);
+    ctx.textBaseline = "top"; ctx.textAlign = "left"; ctx.lineJoin = "round";
+    lines.forEach((l, i) => {
+      const w = widths[i];
+      const lx = L.align === "left" ? bx : L.align === "right" ? bx + bw - w : bx + (bw - w) / 2;
+      const ly = ay + i * lh;
+      if (L.boxOn && l.trim()) {
+        const bh2 = size * 1.24 + pad * 0.7;
+        ctx.globalAlpha = L.boxOp / 100; ctx.fillStyle = L.box;
+        roundRect(lx - pad, ly - size * 0.08 - pad * 0.35, w + pad * 2, bh2, (bh2 / 2) * L.boxRad / 100);
+        ctx.fill(); ctx.globalAlpha = 1;
+      }
+      if (L.shadow > 0) {
+        ctx.shadowColor = `rgba(0,0,0,${Math.min(1, L.shadow / 100)})`;
+        ctx.shadowBlur = size * 0.32 * L.shadow / 100;
+        ctx.shadowOffsetY = size * 0.05 * L.shadow / 100;
+      }
+      if (L.sw > 0) { ctx.lineWidth = size * L.sw / 100; ctx.strokeStyle = L.stroke; ctx.strokeText(l, lx, ly + size * 0.06); }
+      ctx.fillStyle = L.fill; ctx.fillText(l, lx, ly + size * 0.06);
+      ctx.shadowColor = "transparent"; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+    });
+    if (!clean && edLayer === L.id) {
+      const hb = hitBoxes[L.id], m = Math.max(6, size * 0.12);
+      ctx.setLineDash([Math.max(6, W / 120), Math.max(4, W / 200)]);
+      ctx.lineWidth = Math.max(2, W / 500);
+      ctx.strokeStyle = "rgba(255,255,255,.95)"; ctx.strokeRect(hb.x - m, hb.y - m, hb.w + m * 2, hb.h + m * 2);
+      ctx.strokeStyle = "rgba(0,0,0,.6)"; ctx.lineDashOffset = Math.max(6, W / 120); ctx.strokeRect(hb.x - m, hb.y - m, hb.w + m * 2, hb.h + m * 2);
+    }
+    ctx.restore();
+  }
+
+  async function drawThumb(clean) {
+    const W = cv.width, H = cv.height;
+    await Promise.all([...new Set(ED.layers.map((l) => l.font))].map(ensureFont));
+    await gupEmoji();
+    ctx.clearRect(0, 0, W, H);
+    hitBoxes = {};
+    const src = bgSource(), B = ED.bg;
+    ctx.save();
+    if ("filter" in ctx) {
+      const f = [];
+      if (B.bright !== 100) f.push(`brightness(${B.bright}%)`);
+      if ((B.contrast ?? 100) !== 100) f.push(`contrast(${B.contrast}%)`);
+      if ((B.sat ?? 100) !== 100) f.push(`saturate(${B.sat}%)`);
+      if (B.blur > 0) f.push(`blur(${B.blur * W / 1280}px)`);
+      ctx.filter = f.join(" ") || "none";
+    }
+    if (src) drawCover(src);
+    else {
+      const g = ctx.createLinearGradient(0, 0, W, H);
+      g.addColorStop(0, "#2a2a30"); g.addColorStop(1, "#050506");
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+      for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.arc(W * (0.65 + 0.06 * i), H * 0.5, H * (0.12 + 0.07 * i), 0, Math.PI * 2); ctx.lineWidth = 3; ctx.strokeStyle = "rgba(255,255,255,.06)"; ctx.stroke(); }
+    }
+    ctx.restore();
+    if (src) gupPost(B, W, H);
+    const a = B.shadeAmt / 100;
+    if (B.shadeDir !== "none" && a > 0) {
+      let g = null;
+      if (B.shadeDir === "left") g = ctx.createLinearGradient(0, 0, W, 0);
+      else if (B.shadeDir === "right") g = ctx.createLinearGradient(W, 0, 0, 0);
+      else if (B.shadeDir === "top") g = ctx.createLinearGradient(0, 0, 0, H);
+      else if (B.shadeDir === "bottom") g = ctx.createLinearGradient(0, H, 0, 0);
+      if (g) { g.addColorStop(0, `rgba(0,0,0,${Math.min(0.95, a + 0.15)})`); g.addColorStop(0.7, "rgba(0,0,0,0)"); ctx.fillStyle = g; }
+      else ctx.fillStyle = `rgba(0,0,0,${a * 0.8})`;
+      ctx.fillRect(0, 0, W, H);
+    }
+    ED.layers.forEach((L) => { if (L.show && String(L.text).trim()) drawLayer(L, clean); });
+    if (!clean && guides.length) {
+      ctx.save(); ctx.strokeStyle = "#ff3df0"; ctx.lineWidth = Math.max(2, W / 640); ctx.beginPath();
+      guides.forEach((gd) => { if ("x" in gd) { ctx.moveTo(gd.x, 0); ctx.lineTo(gd.x, H); } else { ctx.moveTo(0, gd.y); ctx.lineTo(W, gd.y); } });
+      ctx.stroke(); ctx.restore();
+    }
+  }
+  let drawQueued = false;
+  const redraw = () => {
+    commit();
+    if (drawQueued) return; drawQueued = true;
+    requestAnimationFrame(() => { drawQueued = false; drawThumb(false); });
+  };
+
+  /* ---------- layer list ---------- */
+  const preview = (L) => (String(L.text).split("\n")[0] || "(빈 문구)").slice(0, 22);
+  function setLayer(id) { edLayer = id; renderEditor(); redraw(); }
+  function renderLayers() {
+    const box = $("layers"); box.replaceChildren();
+    const mkBtn = (txt, label, fn, dis) => {
+      const b = document.createElement("button"); b.className = "lyb"; b.textContent = txt; b.setAttribute("aria-label", label); b.title = label;
+      b.disabled = !!dis; b.onclick = (e) => { e.stopPropagation(); fn(); }; return b;
+    };
+    [...ED.layers].reverse().forEach((L) => {
+      const idx = ED.layers.indexOf(L);
+      const row = document.createElement("div");
+      row.className = "ly" + (edLayer === L.id ? " on" : "") + (L.show ? "" : " off");
+      const main = document.createElement("button"); main.className = "ly-main";
+      const chip = document.createElement("span"); chip.className = "ly-chip";
+      chip.style.background = L.boxOn ? L.box : "transparent"; chip.style.color = L.fill;
+      chip.style.fontFamily = `"${L.font}", sans-serif`; chip.style.fontWeight = fontWeight(L.font).trim() || 400;
+      chip.textContent = "가";
+      const t = document.createElement("span"); t.className = "ly-text"; t.textContent = preview(L);
+      const k = document.createElement("span"); k.className = "ly-kind"; k.textContent = L.boxOn && L.boxRad >= 50 ? "라벨" : L.boxOn ? "박스" : "문구";
+      main.append(chip, t, k);
+      main.onclick = () => setLayer(L.id);
+      const tools = document.createElement("div"); tools.className = "ly-tools";
+      tools.append(
+        mkBtn(L.show ? "보임" : "숨김", L.show ? "숨기기" : "보이기", () => { L.show = !L.show; renderEditor(); redraw(); }),
+        mkBtn("↑", "위로 (앞에 보이게)", () => { ED.layers.splice(idx, 1); ED.layers.splice(idx + 1, 0, L); renderEditor(); redraw(); }, idx === ED.layers.length - 1),
+        mkBtn("↓", "아래로 (뒤에 보이게)", () => { ED.layers.splice(idx, 1); ED.layers.splice(idx - 1, 0, L); renderEditor(); redraw(); }, idx === 0),
+        mkBtn("복제", "복제", () => { const c = { ...L, id: newId(), y: Math.min(100, L.y + 6) }; ED.layers.splice(idx + 1, 0, c); edLayer = c.id; renderEditor(); redraw(); }),
+        mkBtn("삭제", "삭제", () => deleteLayer(L.id))
+      );
+      row.append(main, tools);
+      box.append(row);
+    });
+    const bgRow = document.createElement("div"); bgRow.className = "ly bg" + (edLayer === "bg" ? " on" : "");
+    const bm = document.createElement("button"); bm.className = "ly-main";
+    const bc = document.createElement("span"); bc.className = "ly-chip img"; bc.textContent = "▦";
+    const bt = document.createElement("span"); bt.className = "ly-text"; bt.textContent = "배경 · 사진/장면, 어둡게";
+    bm.append(bc, bt); bm.onclick = () => setLayer("bg");
+    bgRow.append(bm); box.append(bgRow);
+  }
+  function deleteLayer(id) {
+    const i = ED.layers.findIndex((l) => l.id === id); if (i < 0) return;
+    ED.layers.splice(i, 1);
+    if (edLayer === id) edLayer = ED.layers.length ? ED.layers[Math.min(i, ED.layers.length - 1)].id : "bg";
+    renderEditor(); redraw();
+  }
+  $("addText").onclick = () => {
+    const L = mkLayer({ text: "새 문구", size: 11, x: 5, y: 40 + (ED.layers.length % 4) * 5 });
+    ED.layers.push(L); edLayer = L.id; renderEditor(); redraw();
+    setTimeout(() => { const t = $("ed-text"); if (t) { t.focus(); t.select(); } }, 0);
+  };
+  $("addPill").onclick = () => {
+    const L = mkLayer({ text: "ep.1", size: 5.2, x: 5, y: 8, shadow: 0, boxOn: true, box: "#000000", boxOp: 58, boxRad: 100, boxPad: 60 });
+    ED.layers.push(L); edLayer = L.id; renderEditor(); redraw();
+    setTimeout(() => { const t = $("ed-text"); if (t) { t.focus(); t.select(); } }, 0);
+  };
+
+  /* ---------- property editor ---------- */
+  const TEXT_GROUPS = [
+    ["크기·위치", [["size", "글자 크기", 1, 45, 0.1, "%"], ["x", "가로 위치", -10, 110, 0.1, "%"], ["y", "세로 위치", -10, 110, 0.1, "%"], ["rot", "회전", -30, 30, 0.5, "°"]]],
+    ["글자 간격", [["ls", "자간", -15, 40, 0.5, ""], ["lh", "줄 간격", 70, 180, 1, "%"]]],
+    ["테두리·그림자", [["sw", "테두리 두께", 0, 40, 1, ""], ["shadow", "그림자", 0, 100, 1, "%"]]],
+    ["배경 박스", [["boxOp", "불투명도", 0, 100, 1, "%"], ["boxRad", "둥글기", 0, 100, 1, "%"], ["boxPad", "여백", 0, 120, 1, "%"]]]
+  ];
+  const BG_GROUPS = [
+    ["어둡게", [["shadeAmt", "강도", 0, 100, 1, "%"]]],
+    ["사진 위치", [["zoom", "확대", 100, 300, 1, "%"], ["x", "가로 이동", -50, 50, 0.5, "%"], ["y", "세로 이동", -50, 50, 0.5, "%"]]],
+    ["사진 보정", [["bright", "밝기", 40, 160, 1, "%"], ["contrast", "대비", 50, 160, 1, "%"], ["sat", "채도", 0, 200, 1, "%"], ["warm", "색온도", -50, 50, 1, ""], ["sharp", "선명도", 0, 100, 1, "%"], ["vig", "비네팅", 0, 100, 1, "%"], ["blur", "흐림", 0, 20, 1, "px"]]]
+  ];
+  const fmtv = (v) => (Number.isInteger(v) ? String(v) : (+v).toFixed(1));
+  function sliderGrid(L, specs) {
+    const grid = document.createElement("div"); grid.className = "ed-grid";
+    specs.forEach(([k, label, min, max, step, unit]) => {
+      const wrap = document.createElement("div"); wrap.className = "rng";
+      const lab = document.createElement("label"); lab.htmlFor = "ed-" + k; lab.textContent = label;
+      const out = document.createElement("output"); out.id = "edo-" + k; out.textContent = fmtv(L[k]) + unit;
+      const r = document.createElement("input");
+      Object.assign(r, { type: "range", id: "ed-" + k, min, max, step, value: L[k] });
+      r.dataset.unit = unit;
+      r.addEventListener("input", () => { L[k] = +r.value; out.textContent = fmtv(L[k]) + unit; redraw(); });
+      wrap.append(lab, out, r); grid.append(wrap);
+    });
+    return grid;
+  }
+  function section(title, ...kids) {
+    const s = document.createElement("div"); s.className = "ed-sec";
+    const h = document.createElement("h4"); h.textContent = title;
+    s.append(h, ...kids); return s;
+  }
+  function colorField(L, k, text) {
+    const lab = document.createElement("label"); lab.className = "sw"; lab.htmlFor = "ed-" + k;
+    const c = document.createElement("input"); c.type = "color"; c.id = "ed-" + k; c.value = L[k];
+    c.addEventListener("input", () => { L[k] = c.value; renderLayers(); redraw(); });
+    const s = document.createElement("span"); s.textContent = text;
+    lab.append(c, s); return lab;
+  }
+  function checkField(L, k, text, rerender) {
+    const lab = document.createElement("label"); lab.className = "ck"; lab.htmlFor = "ed-" + k;
+    const c = document.createElement("input"); c.type = "checkbox"; c.id = "ed-" + k; c.checked = !!L[k];
+    c.addEventListener("change", () => { L[k] = c.checked; rerender ? renderEditor() : renderLayers(); redraw(); });
+    const s = document.createElement("span"); s.textContent = text;
+    lab.append(c, s); return lab;
+  }
+  const SWATCHES = ["#ffffff", "#ffd21f", "#ff2a2a", "#00e0ff", "#7dff6a", "#ff7ad9", "#000000"];
+  function swatchRow(L, k) {
+    const row = document.createElement("div"); row.className = "swatches";
+    SWATCHES.forEach((c) => {
+      const b = document.createElement("button"); b.className = "swatch"; b.style.background = c;
+      b.setAttribute("aria-label", "색 " + c); b.setAttribute("aria-pressed", L[k].toLowerCase() === c);
+      b.onclick = () => { L[k] = c; renderEditor(); redraw(); };
+      row.append(b);
+    });
+    return row;
+  }
+  function segField(label, options, value, onPick) {
+    const seg = document.createElement("div"); seg.className = "seg"; seg.setAttribute("role", "group"); seg.setAttribute("aria-label", label);
+    options.forEach(([v, t]) => {
+      const b = document.createElement("button"); b.textContent = t; b.setAttribute("aria-pressed", value === v);
+      b.onclick = () => onPick(v); seg.append(b);
+    });
+    return seg;
+  }
+
+  function renderEditor() {
+    renderLayers();
+    const body = $("edBody"); body.replaceChildren();
+    if (edLayer === "bg") {
+      const B = ED.bg;
+      body.append(section("어둡게 방향", segField("어둡게 방향",
+        [["left", "왼쪽"], ["right", "오른쪽"], ["bottom", "아래"], ["top", "위"], ["full", "전체"], ["none", "없음"]], B.shadeDir,
+        (v) => { B.shadeDir = v; renderEditor(); redraw(); })));
+      BG_GROUPS.forEach(([t, specs]) => body.append(section(t, sliderGrid(B, specs))));
+      gupBgTools(body, B);
+      if (!bgSource()) {
+        const p = document.createElement("p"); p.className = "hint";
+        p.textContent = "01에서 영상 장면이나 사진을 고르면 배경 확대와 이동을 쓸 수 있어요. 미리보기에서 글자가 없는 곳을 끌어도 배경이 움직여요.";
+        body.append(p);
+      }
+      return;
+    }
+    const L = layerById(edLayer); if (!L) return;
+    // text
+    const ta = document.createElement("textarea"); ta.id = "ed-text"; ta.rows = 2; ta.value = L.text;
+    ta.setAttribute("aria-label", "문구");
+    ta.addEventListener("input", () => { L.text = ta.value; renderLayers(); redraw(); });
+    const alignSeg = segField("정렬", [["left", "왼쪽 정렬"], ["center", "가운데"], ["right", "오른쪽 정렬"]], L.align, (v) => {
+      // keep the block where it is while changing alignment
+      const hb = hitBoxes[L.id], W = cv.width;
+      if (hb) { const ax = v === "left" ? hb.left : v === "right" ? hb.right : hb.cx; L.x = +(ax / W * 100).toFixed(1); }
+      L.align = v; renderEditor(); redraw();
+    });
+    const ctr = document.createElement("button"); ctr.textContent = "화면 가운데로";
+    ctr.onclick = () => { const hb = hitBoxes[L.id]; if (!hb) return; L.x = +(L.x + (cv.width / 2 - hb.cx) / cv.width * 100).toFixed(1); renderEditor(); redraw(); };
+    const r1 = document.createElement("div"); r1.className = "row"; r1.append(alignSeg, ctr);
+    body.append(section("문구", ta, r1));
+    // font
+    const fwrap = document.createElement("div"); fwrap.className = "ed-fonts";
+    const chips = document.createElement("div"); chips.className = "fchips";
+    ["전체", ...new Set(FONTS.map((x) => x[3]))].forEach((g) => {
+      const b = document.createElement("button"); b.textContent = g; b.setAttribute("aria-pressed", fontGroup === g);
+      b.onclick = () => { fontGroup = g; renderEditor(); }; chips.append(b);
+    });
+    const grid2 = document.createElement("div"); grid2.className = "fgrid";
+    FONTS.filter((x) => fontGroup === "전체" || x[3] === fontGroup).forEach(([f, l, w]) => {
+      const b = document.createElement("button"); b.className = "ftile"; b.setAttribute("aria-pressed", L.font === f);
+      const sm = document.createElement("span"); sm.className = "fs"; sm.textContent = "가나다 썸네일";
+      sm.style.fontFamily = `"${f}", sans-serif`; sm.style.fontWeight = w;
+      const nm = document.createElement("span"); nm.className = "fn"; nm.textContent = l;
+      b.append(sm, nm); b.onclick = () => { L.font = f; renderEditor(); redraw(); };
+      grid2.append(b);
+    });
+    fwrap.append(chips, grid2);
+    // colors
+    const cRow = document.createElement("div"); cRow.className = "ed-colors";
+    cRow.append(colorField(L, "fill", "글자색"), colorField(L, "stroke", "테두리색"));
+    body.append(section("글자색", swatchRow(L, "fill"), cRow));
+    TEXT_GROUPS.forEach(([t, specs]) => {
+      if (t === "배경 박스") {
+        const bRow = document.createElement("div"); bRow.className = "ed-colors";
+        bRow.append(checkField(L, "boxOn", "박스 켜기", true), colorField(L, "box", "박스 색"));
+        const parts = [bRow];
+        if (L.boxOn) parts.push(sliderGrid(L, specs));
+        body.append(section(t, ...parts));
+      } else body.append(section(t, sliderGrid(L, specs)));
+    });
+    body.append(section("글꼴 · " + (FONTS.find((x) => x[0] === L.font) || ["", L.font])[1], fwrap));
+  }
+  function syncXY() {
+    const L = edLayer === "bg" ? ED.bg : layerById(edLayer); if (!L) return;
+    ["x", "y"].forEach((k) => {
+      const r = $("ed-" + k), o = $("edo-" + k);
+      if (r) { r.value = L[k]; o.textContent = fmtv(L[k]) + r.dataset.unit; }
+    });
+  }
+  $("edReset").onclick = () => {
+    const active = $("tplList").querySelector('[aria-pressed="true"]');
+    const t = TEMPLATES.find((x) => x.name === active?.querySelector("b")?.textContent) || TEMPLATES[0];
+    applyTemplate(t.key);
+  };
+
+  /* ---------- drag on the preview, with snapping ---------- */
+  cv.tabIndex = 0;
+  const toCanvas = (e) => { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) * cv.width / r.width, y: (e.clientY - r.top) * cv.height / r.height }; };
+  const hit = (p) => {
+    const m = cv.width * 0.01;
+    for (const L of [...ED.layers].reverse()) {
+      const b = hitBoxes[L.id];
+      if (b && L.show && p.x >= b.x - m && p.x <= b.x + b.w + m && p.y >= b.y - m && p.y <= b.y + b.h + m) return L.id;
+    }
+    return null;
+  };
+  let drag = null;
+  cv.addEventListener("pointerdown", (e) => {
+    const p = toCanvas(e);
+    const id = hit(p) || (edLayer === "bg" || bgSource() ? "bg" : null);
+    if (!id) return;
+    if (id !== edLayer) setLayer(id);
+    const L = id === "bg" ? ED.bg : layerById(id);
+    drag = { id, p0: p, x0: L.x, y0: L.y, b: id !== "bg" ? { ...hitBoxes[id] } : null };
+    cv.setPointerCapture(e.pointerId);
+    cv.style.cursor = id === "bg" ? "grabbing" : "move";
+    e.preventDefault();
+  });
+  cv.addEventListener("pointermove", (e) => {
+    const p = toCanvas(e);
+    if (!drag) { cv.style.cursor = hit(p) ? "move" : (bgSource() ? "grab" : "default"); return; }
+    const W = cv.width, H = cv.height;
+    let dx = p.x - drag.p0.x, dy = p.y - drag.p0.y;
+    guides = [];
+    if (drag.b) {
+      const tol = W * 0.008;
+      const vT = [W / 2], hT = [H / 2];
+      ED.layers.forEach((o) => { if (o.id === drag.id || !hitBoxes[o.id] || !o.show) return; const ob = hitBoxes[o.id]; vT.push(ob.left, ob.cx, ob.right); hT.push(ob.cy); });
+      const vC = [drag.b.left, drag.b.cx, drag.b.right].map((v) => v + dx);
+      let best = null;
+      vC.forEach((c) => vT.forEach((t) => { const d = t - c; if (Math.abs(d) < tol && (!best || Math.abs(d) < Math.abs(best.d))) best = { d, t }; }));
+      if (best) { dx += best.d; guides.push({ x: best.t }); }
+      const hC = [drag.b.cy + dy];
+      let bh = null;
+      hC.forEach((c) => hT.forEach((t) => { const d = t - c; if (Math.abs(d) < tol && (!bh || Math.abs(d) < Math.abs(bh.d))) bh = { d, t }; }));
+      if (bh) { dy += bh.d; guides.push({ y: bh.t }); }
+    }
+    const L = drag.id === "bg" ? ED.bg : layerById(drag.id);
+    const lo = drag.id === "bg" ? -50 : -10, hi = drag.id === "bg" ? 50 : 110;
+    L.x = +Math.max(lo, Math.min(hi, drag.x0 + dx / W * 100)).toFixed(2);
+    L.y = +Math.max(lo, Math.min(hi, drag.y0 + dy / H * 100)).toFixed(2);
+    syncXY(); redraw();
+  });
+  const endDrag = () => { if (!drag) return; drag = null; guides = []; cv.style.cursor = ""; redraw(); };
+  cv.addEventListener("pointerup", endDrag);
+  cv.addEventListener("pointercancel", endDrag);
+  cv.addEventListener("keydown", (e) => {
+    if ((e.key === "Delete" || e.key === "Backspace") && edLayer !== "bg") { e.preventDefault(); deleteLayer(edLayer); return; }
+    const dirs = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
+    const d = dirs[e.key]; if (!d) return;
+    e.preventDefault();
+    const step = e.shiftKey ? 10 : 1, L = edLayer === "bg" ? ED.bg : layerById(edLayer); if (!L) return;
+    L.x = +(L.x + d[0] * step / cv.width * 100).toFixed(2);
+    L.y = +(L.y + d[1] * step / cv.height * 100).toFixed(2);
+    syncXY(); redraw();
+  });
+  applyTemplate("travel");
+  commitNow();
+
+
+  function setFmt(f) {
+    state.fmt = f;
+    $("fmt-long").setAttribute("aria-pressed", f === "long");
+    $("fmt-short").setAttribute("aria-pressed", f === "short");
+    if (f === "long") { cv.width = 1280; cv.height = 720; } else { cv.width = 1080; cv.height = 1920; }
+    $("stage").classList.toggle("tall", f === "short");
+    redraw();
+  }
+  $("fmt-long").onclick = () => setFmt("long");
+  $("fmt-short").onclick = () => setFmt("short");
+
+  function renderFrames() {
+    const box = $("frames"); box.replaceChildren();
+    box.hidden = !state.frames.length;
+    $("frameBar").hidden = !state.frames.length;
+    state.frames.forEach((f, i) => {
+      const cell = document.createElement("div");
+      cell.className = "fr" + (pick && pick.i === i ? " picking" : "");
+      const b = document.createElement("button");
+      b.className = "shot" + (i === state.sel ? " sel" : "");
+      b.setAttribute("aria-label", `${i + 1}번 장면 (${fmtTime(f.t)})을 썸네일 배경으로`);
+      const img = document.createElement("img"); img.src = f.url; img.alt = "";
+      const tc = document.createElement("span"); tc.className = "tc"; tc.textContent = fmtTime(f.t);
+      const no = document.createElement("span"); no.className = "no"; no.textContent = String(i + 1).padStart(2, "0");
+      b.append(img, tc, no);
+      if (f.replaced) { const r = document.createElement("span"); r.className = "rep"; r.textContent = "NEW"; b.append(r); }
+      b.onclick = () => { state.sel = i; renderFrames(); redraw(); };
+      const sw = document.createElement("button");
+      sw.className = "swap"; sw.textContent = pick && pick.i === i ? "바꾸는 중" : "바꾸기";
+      sw.setAttribute("aria-label", `${i + 1}번 장면을 다른 장면으로 바꾸기`);
+      sw.onclick = (e) => { e.stopPropagation(); openPicker(i); };
+      cell.append(b, sw);
+      box.append(cell);
+    });
+    renderPhotos();
+  }
+
+  /* ---------- my photos ---------- */
+  function renderPhotos() {
+    const box = $("photos"); box.replaceChildren();
+    const n = state.photos.length;
+    box.hidden = !n; $("photoHead").hidden = !n;
+    $("photoCount").textContent = n ? `${n}장 · 눌러서 배경으로` : "";
+    state.photos.forEach((ph, i) => {
+      const cell = document.createElement("div"); cell.className = "fr";
+      const b = document.createElement("button");
+      b.className = "shot" + (state.sel === -3 && state.photoSel === i ? " sel" : "");
+      b.setAttribute("aria-label", `사진 ${i + 1} (${ph.name})을 썸네일 배경으로`);
+      const img = document.createElement("img"); img.src = ph.url; img.alt = "";
+      const tc = document.createElement("span"); tc.className = "tc"; tc.textContent = "사진 " + (i + 1);
+      b.append(img, tc);
+      b.onclick = () => { state.sel = -3; state.photoSel = i; renderFrames(); redraw(); if (edLayer === "bg") renderEditor(); };
+      const del = document.createElement("button");
+      del.className = "swap"; del.textContent = "삭제";
+      del.setAttribute("aria-label", `사진 ${i + 1} 삭제`);
+      del.onclick = (e) => { e.stopPropagation(); removePhoto(i); };
+      cell.append(b, del);
+      box.append(cell);
+    });
+  }
+  function removePhoto(i) {
+    const [ph] = state.photos.splice(i, 1);
+    if (ph) URL.revokeObjectURL(ph.url);
+    if (state.sel === -3) {
+      if (state.photoSel === i) { state.photoSel = -1; state.sel = state.frames.length ? 0 : -1; }
+      else if (state.photoSel > i) state.photoSel--;
+    }
+    setStatus($("photoStatus"), "사진을 지웠어요.");
+    renderFrames(); redraw();
+  }
+  async function addPhotos(files) {
+    const imgs = [...files].filter((f) => f.type.startsWith("image/") || /\.(heic|heif)$/i.test(f.name));
+    if (!imgs.length) return;
+    const first = state.photos.length;
+    let added = 0, failed = 0;
+    setStatus($("photoStatus"), "사진을 여는 중…");
+    for (const f of imgs) {
+      const url = URL.createObjectURL(f);
+      try {
+        const img = new Image(); img.src = url; await img.decode();
+        const k = Math.min(1, 2400 / Math.max(img.naturalWidth, img.naturalHeight));
+        const c = document.createElement("canvas");
+        c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        state.photos.push({ name: f.name, canvas: c, url });
+        added++;
+      } catch { URL.revokeObjectURL(url); failed++; }
+    }
+    if (added) { state.sel = -3; state.photoSel = first; }
+    renderFrames(); redraw();
+    if (edLayer === "bg") renderEditor();
+    const msg = (added ? `사진 ${added}장을 올렸어요. ${added > 1 ? "첫 사진을" : "이 사진을"} 썸네일 배경으로 썼어요.` : "")
+      + (failed ? ` ${failed}장은 열 수 없는 형식이에요. HEIC 사진은 JPG로 바꿔서 올려 주세요.` : "");
+    setStatus($("photoStatus"), msg.trim(), failed && !added ? "err" : "ok");
+    if (added) $("photos").scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+  function handleFiles(list) {
+    const files = [...list];
+    const vid = files.find((f) => f.type.startsWith("video/"));
+    const imgs = files.filter((f) => !f.type.startsWith("video/"));
+    if (!vid && !imgs.length) return;
+    if (!vid && !imgs.some((f) => f.type.startsWith("image/") || /\.(heic|heif)$/i.test(f.name))) {
+      setStatus($("status"), "영상이나 사진 파일만 올릴 수 있어요.", "err"); return;
+    }
+    if (imgs.length) addPhotos(imgs);
+    if (vid) loadFile(vid);
+  }
+
+  /* ---------- video ---------- */
+  const video = $("video");
+  function grab(maxW) {
+    const w = video.videoWidth, h = video.videoHeight;
+    const s = Math.min(1, maxW / Math.max(w, h));
+    const c = document.createElement("canvas");
+    c.width = Math.round(w * s); c.height = Math.round(h * s);
+    c.getContext("2d").drawImage(video, 0, 0, c.width, c.height);
+    return c;
+  }
+  const seek = (t) => new Promise((res, rej) => {
+    const ok = () => { cleanup(); res(); };
+    const bad = () => { cleanup(); rej(new Error("seek")); };
+    const cleanup = () => { video.removeEventListener("seeked", ok); video.removeEventListener("error", bad); };
+    video.addEventListener("seeked", ok); video.addEventListener("error", bad);
+    video.currentTime = t;
+  });
+  // one video element serves extraction, preview and candidates: run its seeks one at a time
+  let vLock = Promise.resolve();
+  const withVideo = (fn) => { const p = vLock.then(fn, fn); vLock = p.catch(() => {}); return p; };
+  const fmtPrecise = (t) => `${fmtTime(t)}.${Math.floor((t % 1) * 10)}`;
+  const toJpeg = (c) => new Promise((r) => c.toBlob(r, "image/jpeg", 0.85));
+
+  /* ---------- scene picker: swap one of the 8 frames ---------- */
+  let pick = null;          // {i, t, token}
+  let want = null, looping = false;
+  function segment(i) {
+    const a = i > 0 ? state.frames[i - 1].t : 0;
+    const b = i < state.frames.length - 1 ? state.frames[i + 1].t : state.duration;
+    return [a, b];
+  }
+  function openPicker(i) {
+    if (!video.videoWidth || !state.frames[i]) return;
+    video.pause();
+    const f = state.frames[i];
+    pick = { i, t: f.t, token: Symbol() };
+    const pv = $("pkView");
+    pv.width = 640; pv.height = Math.round(640 * video.videoHeight / video.videoWidth);
+    const r = $("pkRange"); r.max = state.duration; r.value = f.t;
+    $("pkTitle").innerHTML = "";
+    $("pkTitle").append(`Scene ${String(i + 1).padStart(2, "0")} `);
+    const ko = document.createElement("span"); ko.className = "ko"; ko.textContent = `· ${i + 1}번 장면 바꾸기 (지금 ${fmtTime(f.t)})`;
+    $("pkTitle").append(ko);
+    $("picker").hidden = false;
+    setStatus($("frameStatus"), "");
+    renderFrames();
+    showAt(f.t);
+    makeCands(false);
+    $("picker").scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+  function closePicker() {
+    pick = null; want = null;
+    $("picker").hidden = true;
+    renderFrames();
+  }
+  function showAt(t) {
+    if (!pick) return;
+    t = Math.max(0, Math.min(state.duration - 0.05, t));
+    pick.t = t;
+    $("pkRange").value = t;
+    $("pkTime").textContent = fmtPrecise(t);
+    $("pkCands").querySelectorAll("button").forEach((b) => b.classList.toggle("on", Math.abs(+b.dataset.t - t) < 0.06));
+    want = t;
+    if (!looping) previewLoop();
+  }
+  async function previewLoop() {
+    looping = true;
+    while (want !== null && pick) {
+      const t = want; want = null;
+      await withVideo(async () => {
+        await seek(t);
+        const pv = $("pkView");
+        pv.getContext("2d").drawImage(video, 0, 0, pv.width, pv.height);
+      }).catch(() => {});
+    }
+    looping = false;
+  }
+  async function makeCands(random) {
+    if (!pick) return;
+    const token = pick.token = Symbol();
+    const box = $("pkCands"); box.replaceChildren();
+    const wait = document.createElement("p"); wait.className = "wait"; wait.textContent = "후보 장면을 뽑는 중…"; box.append(wait);
+    const [a, b] = segment(pick.i);
+    const span = Math.max(0.2, b - a), N = 6;
+    const times = Array.from({ length: N }, (_, k) => random ? a + Math.random() * span : a + span * (k + 0.5) / N)
+      .map((t) => Math.max(0, Math.min(state.duration - 0.05, t))).sort((x, y) => x - y);
+    const tiles = [];
+    for (const t of times) {
+      const c = await withVideo(async () => { await seek(t); return grab(320); }).catch(() => null);
+      if (!pick || pick.token !== token) return;   // picker closed or reopened meanwhile
+      if (!c) continue;
+      const btn = document.createElement("button");
+      btn.dataset.t = t;
+      btn.setAttribute("aria-label", `${fmtTime(t)} 장면 고르기`);
+      const tc = document.createElement("span"); tc.className = "tc"; tc.textContent = fmtTime(t);
+      btn.append(c, tc);
+      btn.onclick = () => showAt(t);
+      tiles.push(btn);
+    }
+    box.replaceChildren(...tiles);
+    if (!tiles.length) { wait.textContent = "후보를 뽑지 못했어요. 막대로 직접 골라 주세요."; box.append(wait); }
+    showAt(pick.t);   // redraw preview: candidate seeks moved the video
+  }
+  async function applyPick() {
+    if (!pick) return;
+    const { i, t } = pick;
+    $("pkApply").disabled = true;
+    try {
+      const c = await withVideo(async () => { await seek(t); return grab(1920); });
+      const blob = await toJpeg(c);
+      if (!blob) throw new Error("blob");
+      const selObj = state.sel >= 0 ? state.frames[state.sel] : null;
+      const old = state.frames[i];
+      const nf = { t, canvas: c, blob, url: URL.createObjectURL(blob), replaced: true };
+      URL.revokeObjectURL(old.url);
+      state.frames[i] = nf;
+      const keep = selObj === old ? nf : selObj;
+      state.frames.sort((x, y) => x.t - y.t);
+      if (keep) state.sel = state.frames.indexOf(keep);
+      closePicker(); redraw();
+      setStatus($("frameStatus"), `${i + 1}번 장면을 ${fmtTime(t)} 장면으로 바꿨어요.`, "ok");
+    } catch {
+      setStatus($("frameStatus"), "장면을 가져오지 못했어요. 다른 시간으로 다시 골라 주세요.", "err");
+    } finally {
+      $("pkApply").disabled = false;
+    }
+  }
+  $("pkRange").addEventListener("input", (e) => showAt(+e.target.value));
+  document.querySelectorAll(".pk-nudge button").forEach((b) => { b.onclick = () => pick && showAt(pick.t + parseFloat(b.dataset.d)); });
+  $("pkMore").onclick = () => makeCands(true);
+  $("pkApply").onclick = applyPick;
+  $("pkCancel").onclick = () => { closePicker(); setStatus($("frameStatus"), ""); };
+  $("picker").addEventListener("keydown", (e) => { if (e.key === "Escape") $("pkCancel").click(); });
+
+  async function extractFrames(jitter) {
+    const out = [];
+    for (let i = 0; i < FRAME_COUNT; i++) {
+      const frac = jitter ? i + 0.15 + Math.random() * 0.7 : i + 0.5;
+      const t = state.duration * frac / FRAME_COUNT;
+      const c = await withVideo(async () => { await seek(t); return grab(1920); }).catch(() => null);
+      if (!c) continue;
+      const blob = await toJpeg(c);
+      if (!blob) continue;
+      out.push({ t, canvas: c, blob, url: URL.createObjectURL(blob) });
+      setStatus($(jitter ? "frameStatus" : "status"), `장면을 뽑는 중… ${i + 1}/${FRAME_COUNT}`);
+    }
+    return out;
+  }
+  $("reshuffle").onclick = async () => {
+    if (!video.videoWidth) return;
+    closePicker();
+    $("reshuffle").disabled = true;
+    const fresh = await extractFrames(true);
+    if (fresh.length) {
+      state.frames.forEach((f) => URL.revokeObjectURL(f.url));
+      state.frames = fresh;
+      if (state.sel >= 0) state.sel = Math.min(state.sel, fresh.length - 1);
+      renderFrames(); redraw();
+      setStatus($("frameStatus"), "장면 8장을 다른 위치에서 새로 뽑았어요.", "ok");
+    } else setStatus($("frameStatus"), "장면을 다시 뽑지 못했어요.", "err");
+    $("reshuffle").disabled = false;
+  };
+
+  async function loadFile(file) {
+    if (!file || !(file.url || file.type.startsWith("video/"))) { setStatus($("status"), "영상 파일만 올릴 수 있어요.", "err"); return; }
+    state.frames.forEach((f) => URL.revokeObjectURL(f.url));
+    state.frames = []; if (state.sel !== -3) state.sel = -1; state.custom = null;
+    if (pick) closePicker();
+    setStatus($("frameStatus"), "");
+    renderFrames();
+    if (video.src && video.src.startsWith("blob:")) URL.revokeObjectURL(video.src);
+    video.src = file.url || URL.createObjectURL(file);
+    video.hidden = false;
+    setStatus($("status"), "영상을 읽는 중…");
+    try {
+      await new Promise((res, rej) => {
+        video.onloadeddata = res;
+        video.onerror = () => rej(new Error("decode"));
+      });
+    } catch {
+      setStatus($("status"), "이 브라우저에서 재생할 수 없는 형식이에요. MP4(H.264)로 변환해서 다시 올려 주세요.", "err");
+      return;
+    }
+    state.duration = video.duration || 0;
+    state.vertical = video.videoHeight > video.videoWidth;
+    const meta = $("meta");
+    meta.replaceChildren();
+    [[file.name, false], [fmtTime(state.duration), false], [`${video.videoWidth}×${video.videoHeight}`, false], [state.vertical || state.duration <= 180 ? "숏츠형" : "롱폼형", true]].forEach(([t, on]) => {
+      const c = document.createElement("span"); c.className = "chip" + (on ? " on" : ""); c.textContent = t; meta.append(c);
+    });
+    meta.hidden = false;
+    setFmt(state.vertical ? "short" : "long");
+    setStatus($("status"), "장면을 뽑는 중… 0/" + FRAME_COUNT);
+    state.frames = await extractFrames(false);
+    await withVideo(() => seek(0)).catch(() => {});
+    if (state.sel !== -3) state.sel = state.frames.length ? Math.min(2, state.frames.length - 1) : -1;
+    renderFrames(); redraw();
+    $("useCurrent").hidden = false;
+    setStatus($("status"), `장면 ${state.frames.length}개를 준비했어요. 장면을 골라 아래에서 썸네일을 만드세요.`, "ok");
+  }
+  $("file").addEventListener("change", (e) => { handleFiles(e.target.files); e.target.value = ""; });
+  $("photoFile").addEventListener("change", (e) => { addPhotos(e.target.files); e.target.value = ""; });
+  const drop = $("drop");
+  ["dragenter", "dragover"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("over"); }));
+  ["dragleave", "drop"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
+  drop.addEventListener("drop", (e) => handleFiles(e.dataTransfer.files));
+  $("useCurrent").onclick = () => {
+    if (!video.videoWidth) return;
+    state.custom = grab(1920); state.sel = -2; renderFrames(); redraw();
+  };
+
+  /* ---------- save ---------- */
+  $("save").onclick = async () => {
+    await drawThumb(true);
+    const blob = await new Promise((r) => cv.toBlob(r, "image/png"));
+    redraw();
+    if (!blob) { setStatus($("saveStatus"), "이미지를 만들지 못했어요.", "err"); return; }
+    const name = `thumbnail_${state.fmt === "long" ? "16x9" : "9x16"}.png`;
+    let dl = null;
+    try { dl = await window.claude?.use?.("downloads"); } catch {}
+    const showFallback = () => { $("fallbackImg").src = cv.toDataURL("image/png"); $("fallback").hidden = false; };
+    if (!dl) { showFallback(); setStatus($("saveStatus"), "아래 이미지를 직접 저장해 주세요."); return; }
+    try {
+      await dl.save({ filename: name, data: blob });
+      setStatus($("saveStatus"), `${name} 저장했어요.`, "ok");
+    } catch (e) {
+      if (e?.code === "declined") setStatus($("saveStatus"), "저장을 취소했어요.");
+      else { showFallback(); setStatus($("saveStatus"), "저장 창을 열지 못했어요. 아래 이미지를 직접 저장해 주세요.", "err"); }
+    }
+  };
+
+
+  /* ---------- 이모지 글꼴: 그리기 전에 쓰인 이모지 부분만 내려받는다 ---------- */
+  var gupEmojiDone = gupEmojiDone || new Set();
+  async function gupEmoji() {
+    gupEmojiDone = gupEmojiDone || new Set();
+    const need = [...ED.layers.map((l) => String(l.text)).join("")].filter((ch) => {
+      const cp = ch.codePointAt(0);
+      return (cp >= 0x1F000 || (cp >= 0x2600 && cp <= 0x27BF)) && !gupEmojiDone.has(ch);
+    });
+    if (!need.length) return;
+    try { await document.fonts.load('80px "Noto Color Emoji"', need.join("")); } catch {}
+    need.forEach((ch) => gupEmojiDone.add(ch));
+  }
+
+  /* ---------- 사진 보정·고화질 (tools/build_studio.py가 넣은 부분) ---------- */
+  // 배경을 그린 뒤 색온도·선명도·비네팅을 얹는다 (밝기·대비·채도는 ctx.filter로 처리)
+  function gupPost(B, W, H) {
+    const sharp = B.sharp || 0, warm = B.warm || 0, vig = B.vig || 0;
+    if (sharp > 0) {
+      const a = sharp / 100 * 0.9;
+      const img = ctx.getImageData(0, 0, W, H), s = img.data, o = new Uint8ClampedArray(s), row = W * 4;
+      for (let y = 1; y < H - 1; y++) {
+        for (let x = 1; x < W - 1; x++) {
+          const i = y * row + x * 4;
+          for (let c = 0; c < 3; c++) {
+            const v = s[i + c] * (1 + 4 * a) - a * (s[i + c - 4] + s[i + c + 4] + s[i + c - row] + s[i + c + row]);
+            o[i + c] = v;
+          }
+        }
+      }
+      img.data.set(o); ctx.putImageData(img, 0, 0);
+    }
+    if (warm !== 0) {
+      ctx.save(); ctx.globalCompositeOperation = "soft-light";
+      ctx.fillStyle = warm > 0 ? `rgba(255,150,40,${warm / 50 * 0.55})` : `rgba(40,130,255,${-warm / 50 * 0.55})`;
+      ctx.fillRect(0, 0, W, H); ctx.restore();
+    }
+    if (vig > 0) {
+      const g = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.35, W / 2, H / 2, Math.hypot(W, H) / 2);
+      g.addColorStop(0, "rgba(0,0,0,0)"); g.addColorStop(1, `rgba(0,0,0,${vig / 100 * 0.8})`);
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    }
+  }
+  // 사진 밝기 분포를 보고 노출·대비를 맞춘다
+  function gupAuto(B) {
+    const src = bgSource(); if (!src) return false;
+    const c = document.createElement("canvas"), k = 160 / Math.max(src.width, src.height);
+    c.width = Math.max(1, Math.round(src.width * k)); c.height = Math.max(1, Math.round(src.height * k));
+    const g = c.getContext("2d"); g.drawImage(src, 0, 0, c.width, c.height);
+    const d = g.getImageData(0, 0, c.width, c.height).data, hist = new Array(256).fill(0);
+    let n = 0, sum = 0, satSum = 0;
+    for (let i = 0; i < d.length; i += 4) {
+      const r = d[i], gg = d[i + 1], b = d[i + 2], l = Math.round(0.299 * r + 0.587 * gg + 0.114 * b);
+      hist[l]++; n++; sum += l; satSum += Math.max(r, gg, b) - Math.min(r, gg, b);
+    }
+    const pct = (p) => { let acc = 0; for (let i = 0; i < 256; i++) { acc += hist[i]; if (acc >= n * p) return i; } return 255; };
+    const lo = pct(0.02), hi = pct(0.98), mean = sum / n / 255, satAvg = satSum / n / 255;
+    B.contrast = Math.round(Math.min(150, Math.max(90, 100 * 0.92 / Math.max(0.3, (hi - lo) / 255))));
+    B.bright = Math.round(Math.min(150, Math.max(80, 100 * (0.5 / Math.max(0.15, mean)) ** 0.5)));
+    B.sat = Math.round(Math.min(140, Math.max(100, 100 + (0.28 - satAvg) * 120)));
+    B.sharp = Math.max(B.sharp || 0, 25);
+    return true;
+  }
+  function gupPresets() { return [
+    ["자동 보정", null],
+    ["따뜻한 여행", { bright: 104, contrast: 108, sat: 118, warm: 18, sharp: 30, vig: 30 }],
+    ["선명하게", { bright: 102, contrast: 115, sat: 112, warm: 0, sharp: 55, vig: 15 }],
+    ["차분한 다큐", { bright: 96, contrast: 110, sat: 80, warm: -8, sharp: 25, vig: 45 }],
+    ["원래대로", { bright: 100, contrast: 100, sat: 100, warm: 0, sharp: 0, vig: 0, blur: 0 }]
+  ]; }
+  // 고르고 있는 배경(장면·지금 화면·내 사진)을 새 이미지로 바꾼다
+  async function gupReplaceBg(url, newT) {
+    const img = new Image(); img.src = url; await img.decode();
+    const c = document.createElement("canvas"); c.width = img.naturalWidth; c.height = img.naturalHeight;
+    c.getContext("2d").drawImage(img, 0, 0);
+    if (state.sel >= 0 && state.frames[state.sel]) {
+      const f = state.frames[state.sel];
+      const small = document.createElement("canvas"), k = 480 / Math.max(c.width, c.height);
+      small.width = Math.round(c.width * k); small.height = Math.round(c.height * k);
+      small.getContext("2d").drawImage(c, 0, 0, small.width, small.height);
+      const blob = await toJpeg(small);
+      URL.revokeObjectURL(f.url);
+      Object.assign(f, { canvas: c, blob, url: URL.createObjectURL(blob), replaced: true });
+      if (newT != null) f.t = newT;
+    } else if (state.sel === -2) state.custom = c;
+    else if (state.sel === -3 && state.photos[state.photoSel]) state.photos[state.photoSel].canvas = c;
+    renderFrames(); redraw();
+    return c;
+  }
+  const gupToken = () => { try { return parent.document.querySelector('meta[name="gup-token"]').content; } catch { return ""; } };
+  async function gupApi(path, init) {
+    const r = await fetch(path, { ...init, headers: { ...(init.headers || {}), "X-GUP-Token": gupToken() } });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(typeof d.detail === "string" ? d.detail : "요청을 처리하지 못했어요.");
+    return d;
+  }
+  let gupJob = null;
+  function gupBgTools(body, B) {
+    const row = document.createElement("div"); row.className = "row"; row.style.flexWrap = "wrap"; row.style.gap = "6px";
+    gupPresets().forEach(([name, vals]) => {
+      const b = document.createElement("button"); b.textContent = name;
+      b.onclick = () => {
+        if (!vals) { if (!gupAuto(B)) return; } else Object.assign(B, vals);
+        commitNow(); renderEditor(); redraw();
+      };
+      row.append(b);
+    });
+    body.append(section("보정 프리셋", row));
+    if (window.parent === window) return;
+    const st = document.createElement("p"); st.className = "hint"; st.id = "gupHqStatus";
+    const say = (t) => { st.textContent = t; };
+    const hq = document.createElement("button"); hq.textContent = "선명한 원본 화질로";
+    hq.title = "고른 장면 앞뒤 0.8초를 원본 해상도로 다시 뽑아 가장 선명한 프레임으로 바꿉니다";
+    hq.onclick = async () => {
+      if (state.sel === -3) return say("내 사진은 원본 화질 추출 대신 AI 업스케일을 쓰세요.");
+      const t = state.sel >= 0 && state.frames[state.sel] ? state.frames[state.sel].t : state.sel === -2 ? video.currentTime : null;
+      if (t == null || !gupJob) return say("먼저 장면을 고르세요.");
+      hq.disabled = true; say("원본에서 가장 선명한 장면을 찾는 중…");
+      try {
+        const r = await gupApi(`/api/jobs/${gupJob}/hq-frame`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ t }) });
+        await gupReplaceBg(r.url, r.t);
+        say(`원본 ${r.width}×${r.height}, 프레임 ${r.candidates}장 중 가장 선명한 장면(${fmtPrecise(r.t)})으로 바꿨어요.`);
+      } catch (e) { say(e.message); }
+      hq.disabled = false;
+    };
+    const up = document.createElement("button"); up.textContent = "AI 업스케일";
+    up.title = "AI로 해상도를 키우고 디테일을 살립니다 (처음 한 번 도구를 내려받아요)";
+    up.onclick = async () => {
+      const src = bgSource(); if (!src) return say("먼저 장면이나 사진을 고르세요.");
+      up.disabled = true; say("AI 업스케일 중… (처음엔 도구를 내려받느라 1분 정도 걸려요)");
+      try {
+        const blob = await new Promise((r) => { const c = document.createElement("canvas"); c.width = src.width; c.height = src.height; c.getContext("2d").drawImage(src, 0, 0); c.toBlob(r, "image/png"); });
+        const fd = new FormData(); fd.append("file", blob, "in.png");
+        const r = await gupApi("/api/upscale", { method: "POST", body: fd });
+        await gupReplaceBg(r.url, null);
+        say(`AI 업스케일 완료: ${src.width}×${src.height} → ${r.width}×${r.height}`);
+      } catch (e) { say(e.message); }
+      up.disabled = false;
+    };
+    const row2 = document.createElement("div"); row2.className = "row"; row2.style.gap = "6px"; row2.append(hq, up);
+    body.append(section("고화질", row2, st));
+  }
+
+  /* ---------- G-UPLOADER 연결 (tools/build_studio.py가 넣은 부분) ---------- */
+  if (window.parent !== window) {
+    const gb = document.createElement("button");
+    gb.className = "primary"; gb.id = "gupApply"; gb.textContent = "G-UPLOADER에 적용";
+    gb.style.marginLeft = "8px";
+    $("save").after(gb);
+
+    /* 미리보기(왼쪽, 고정)와 설정(오른쪽) 나란히 배치 */
+    {
+      document.body.classList.add("gup-embed");
+      const stage = $("stage"), work = stage.parentElement, ed = work.querySelector(".editor");
+      work.closest(".slide").classList.add("gup-design");
+      const split = document.createElement("div"); split.className = "gup-split";
+      const left = document.createElement("div"); left.className = "gup-left";
+      const right = document.createElement("div"); right.className = "gup-right";
+      const fmtRow = work.querySelector(".seg")?.closest(".row");
+      [fmtRow, stage, $("save").closest(".row"), $("saveStatus"), $("fallback")].forEach((el) => el && left.append(el));
+      right.append(ed);
+      split.append(left, right);
+      work.prepend(split);
+    }
+
+    gb.onclick = async () => {
+      gb.disabled = true;
+      await drawThumb(true);
+      let blob = null;
+      for (let q = 0.92; q >= 0.6; q -= 0.08) {
+        blob = await new Promise((r) => cv.toBlob(r, "image/jpeg", q));
+        if (blob && blob.size < 1.9 * 1024 * 1024) break;
+      }
+      redraw();
+      gb.disabled = false;
+      if (!blob) { setStatus($("saveStatus"), "이미지를 만들지 못했어요.", "err"); return; }
+      parent.postMessage({ type: "gup:thumb", blob, fmt: state.fmt }, location.origin);
+      setStatus($("saveStatus"), "G-UPLOADER로 보냈어요.", "ok");
+    };
+    // SAVE PNG: 이 창 안에서는 저장 창을 띄울 수 없어 G-UPLOADER가 대신 파일로 저장한다
+    $("save").onclick = async () => {
+      await drawThumb(true);
+      const blob = await new Promise((r) => cv.toBlob(r, "image/png"));
+      redraw();
+      if (!blob) { setStatus($("saveStatus"), "이미지를 만들지 못했어요.", "err"); return; }
+      const name = `thumbnail_${state.fmt === "long" ? "16x9" : "9x16"}.png`;
+      parent.postMessage({ type: "gup:save", blob, name }, location.origin);
+      setStatus($("saveStatus"), `${name} 저장했어요 (다운로드 폴더).`, "ok");
+    };
+    const setMode = (attached) => { gb.textContent = attached ? "G-UPLOADER에 적용" : "JPG로 저장 (업로드용)"; };
+    window.addEventListener("message", (e) => {
+      if (e.origin !== location.origin || e.source !== parent) return;
+      const m = e.data || {};
+      if (m.type === "gup:attach") { gupJob = m.job || null; setMode(!!gupJob); return; }
+      if (m.type !== "gup:init") return;
+      gupJob = m.job || null;
+      setMode(!!gupJob);
+      if (m.text) {
+        applyTemplate("travel");
+        const L = ED.layers, t = m.text;
+        const put = (i, v) => { if (!L[i]) return; if (v) L[i].text = v; else L[i].show = false; };
+        put(0, t.label); put(1, t.sub); put(2, t.line1); put(3, t.line2);
+        commitNow(); renderEditor(); redraw();
+      }
+      if (m.video) loadFile({ url: m.video.url, name: m.video.name, type: "video/mp4" });
+    });
+    parent.postMessage({ type: "gup:ready" }, location.origin);
+  }
+
+  drawThumb(false);
+  if (document.fonts?.ready) document.fonts.ready.then(redraw);
+})();
+</script>
+
+</body>
+</html>

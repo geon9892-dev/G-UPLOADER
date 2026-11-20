@@ -1,0 +1,70 @@
+# v로 시작하는 태그(예: v0.2.0)를 올리면 Windows 설치 파일을 만들어 Releases에 올린다.
+# 태그 버전과 app/__init__.py의 __version__이 같아야 한다.
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check version
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}".TrimStart("v")
+          $code = (Select-String -Path app/__init__.py -Pattern '__version__ = "(.+)"').Matches[0].Groups[1].Value
+          if ($tag -ne $code) { throw "태그($tag)와 __version__($code)이 다릅니다" }
+          "APP_VERSION=$tag" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller
+
+      - name: Build exe
+        run: >
+          pyinstaller --noconfirm --clean --name G-UPLOADER --console
+          --add-data "app/static;app/static"
+          --add-data "templates;templates"
+          --collect-all faster_whisper
+          --collect-data googleapiclient
+          run.py
+
+      - name: Bundle ffmpeg
+        shell: pwsh
+        run: |
+          Invoke-WebRequest https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip -OutFile ffmpeg.zip
+          Expand-Archive ffmpeg.zip -DestinationPath ffmpeg
+          New-Item -ItemType Directory -Force dist/G-UPLOADER/bin | Out-Null
+          Get-ChildItem ffmpeg -Recurse -Include ffmpeg.exe,ffprobe.exe | Copy-Item -Destination dist/G-UPLOADER/bin
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          choco install innosetup -y --no-progress
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "/DAppVersion=$env:APP_VERSION" installer/g-uploader.iss
+
+      - name: Checksums
+        shell: pwsh
+        run: |
+          $f = Get-Item "installer/Output/G-UPLOADER-Setup-$env:APP_VERSION.exe"
+          $h = (Get-FileHash $f -Algorithm SHA256).Hash.ToLower()
+          "$h  $($f.Name)" | Out-File -Encoding ascii installer/Output/SHA256SUMS.txt
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            installer/Output/G-UPLOADER-Setup-*.exe
+            installer/Output/SHA256SUMS.txt
+          generate_release_notes: true

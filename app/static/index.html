@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="gup-token" content="__GUP_TOKEN__">
+<title>G-UPLOADER</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="/static/style.css?v=__GUP_BUILD__">
+</head>
+<body>
+
+<header>
+  <div class="logo" id="logo">G-UPLOADER</div>
+  <div class="status">
+    <span class="hide-m" id="chStatus"><span class="dot"></span>유튜브 미연결</span>
+    <span class="en hide-m">v__GUP_VERSION__</span>
+    <button class="pill hot" id="updBtn" type="button" style="display:none">업데이트</button>
+    <button class="pill" id="thumbOnlyBtn" type="button">썸네일 만들기</button>
+    <button class="pill" id="setBtn" type="button">설정</button>
+  </div>
+</header>
+
+<section id="stage">
+  <canvas id="cv"></canvas>
+  <div class="center">
+    <h1>G-UPLOADER</h1>
+    <p class="sub" id="sub">영상 파일을 여기에 끌어다 놓으세요</p>
+    <div class="fname" id="fname"></div>
+    <button class="pick" id="pickBtn" type="button">영상 파일 선택</button>
+    <div class="steps" id="steps"></div>
+    <div class="bar" id="bar"><i></i></div>
+    <div class="note" id="note"></div>
+    <div class="errbox" id="errbox"><div id="errmsg"></div><button class="pill" id="retryBtn" type="button">처음으로</button></div>
+  </div>
+</section>
+
+<main id="result">
+  <div class="sec-h"><h2>ANALYSIS</h2><p>로컬 원본 파일 기준</p></div>
+  <div class="meta-row" id="metaRow"></div>
+  <div class="summary" id="summary"></div>
+  <div class="warns" id="warns"></div>
+
+  <div class="sec-h"><h2>3 VERSIONS</h2><p>버전 전체를 고르거나, 제목·설명·해시태그를 각각 다른 버전에서 골라 섞을 수 있어요</p></div>
+  <div class="cards" id="cards"></div>
+
+  <div class="sec-h"><h2>FINAL</h2><p>업로드될 내용 · 클릭해서 바로 수정</p></div>
+  <div class="final">
+    <div class="combo en" id="combo"></div>
+    <div class="lbl">제목</div>
+    <div class="t" id="fT" contenteditable="plaintext-only" spellcheck="false"></div>
+    <div class="counter" id="fTc"></div>
+    <div class="lbl">설명</div>
+    <div class="d" id="fD" contenteditable="plaintext-only" spellcheck="false"></div>
+    <div class="counter" id="fDc"></div>
+    <div class="lbl">해시태그 (설명 마지막 줄에 붙습니다)</div>
+    <div class="h" id="fH" contenteditable="plaintext-only" spellcheck="false"></div>
+    <div class="lbl">태그 (쉼표로 구분, 시청자에게는 보이지 않음)</div>
+    <div class="d" id="fG" contenteditable="plaintext-only" spellcheck="false"></div>
+    <div class="counter" id="fGc"></div>
+  </div>
+
+  <div class="sec-h"><h2>SETTINGS</h2><p>유튜브에 함께 적용될 항목</p></div>
+  <div class="grid2">
+    <div class="box">
+      <h3>적용할 유튜브 영상</h3>
+      <div class="desc">스튜디오에서 비공개로 올린 영상을 같은 파일명으로 자동으로 찾습니다.</div>
+      <select id="videoSel"></select>
+      <div class="lbl" style="font-size:10.5px;color:var(--faint);letter-spacing:.15em;margin:18px 0 6px">썸네일</div>
+      <div id="thumbWrap"></div>
+      <input type="file" id="thumbFile" accept="image/*" hidden>
+    </div>
+    <div class="box">
+      <h3>표시 및 공개 설정</h3>
+      <label class="chk"><input type="checkbox" id="cAi"><span class="bx"></span><span class="tx">AI 사용 (변경되거나 합성된 콘텐츠)<small id="aiWhy">실제처럼 보이는 AI 생성·합성 장면이 있으면 체크</small></span></label>
+      <label class="chk"><input type="checkbox" id="cPaid"><span class="bx"></span><span class="tx">유료 프로모션 포함<small id="paidWhy">협찬, 제품 제공, 광고가 있으면 체크</small></span></label>
+      <label class="chk"><input type="checkbox" id="cKids"><span class="bx"></span><span class="tx">아동용 영상<small>아동을 대상으로 만든 영상이면 체크</small></span></label>
+      <div class="row">카테고리<select id="catSel"></select></div>
+      <div class="row">공개 방식
+        <select id="when">
+          <option value="now">공개 버튼을 누르면 바로 공개</option>
+          <option value="sched">예약 공개</option>
+        </select>
+        <input type="datetime-local" id="whenAt" style="display:none">
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <a class="btn" id="studioLink" href="#" target="_blank" rel="noopener" style="display:none;flex:none;padding:14px 22px;font-size:14px;text-decoration:none;text-align:center">스튜디오에서 보기</a>
+    <button class="btn" id="applyBtn" type="button">세팅 적용 (비공개 유지)</button>
+    <button class="btn solid" id="pubBtn" type="button" disabled>공개</button>
+  </div>
+  <button class="again" id="againBtn" type="button">다른 영상 올리기</button>
+</main>
+
+<div class="shade" id="shade"></div>
+<aside class="drawer" id="drawer">
+  <h2>SETTINGS <button class="pill" id="closeSet" type="button">닫기</button></h2>
+  <p class="intro">처음 한 번만 설정하면 됩니다. 키와 로그인 정보는 이 PC 안에 암호화되어 저장되고, 어디에도 전송되지 않습니다.</p>
+
+  <div class="sbox">
+    <h3>1. Claude API 키 <span class="ok" id="okClaude"></span></h3>
+    <p>제목과 설명을 쓰는 AI입니다. <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a>에서 키를 만들어 붙여넣으세요.</p>
+    <input type="password" id="claudeKey" placeholder="sk-ant-..." autocomplete="off">
+    <select id="claudeModel">
+      <option value="claude-opus-5-5">Claude Opus 5.5 (기본 · 가장 좋은 글)</option>
+      <option value="claude-sonnet-5-5">Claude Sonnet 5.5 (더 저렴)</option>
+      <option value="claude-haiku-5-5">Claude Haiku 5.5 (가장 저렴)</option>
+    </select>
+    <div class="line"><button class="btn solid" id="saveClaude" type="button">저장 및 확인</button></div>
+    <div class="msg" id="msgClaude"></div>
+  </div>
+
+  <div class="sbox">
+    <h3>2. 유튜브 연결 <span class="ok" id="okYt"></span></h3>
+    <p>Google Cloud에서 만든 OAuth 클라이언트 파일(데스크톱 앱 유형, JSON)을 등록한 뒤 계정을 연결합니다. 자세한 방법은 저장소의 docs/SETUP.md를 보세요.</p>
+    <div class="line">
+      <button class="btn" id="clientBtn" type="button">클라이언트 파일 등록</button>
+      <button class="btn solid" id="connectBtn" type="button">유튜브 계정 연결</button>
+      <button class="btn" id="disconnectBtn" type="button" style="display:none">연결 해제</button>
+    </div>
+    <input type="file" id="clientFile" accept=".json,application/json" hidden>
+    <p>JSON 파일 대신 클라이언트 ID와 보안 비밀번호를 붙여넣어도 됩니다.</p>
+    <input type="text" id="gcId" placeholder="클라이언트 ID (….apps.googleusercontent.com)" autocomplete="off">
+    <input type="password" id="gcSecret" placeholder="클라이언트 보안 비밀번호 (GOCSPX-…)" autocomplete="off">
+    <div class="line"><button class="btn" id="saveClientId" type="button">ID로 등록</button></div>
+    <div class="msg" id="msgYt"></div>
+  </div>
+
+  <div class="sbox">
+    <h3>3. 채널 정체성 파일</h3>
+    <p>AI가 따를 말투, 금지 표현, 고정 문구입니다. <b>[내 채널 분석해서 자동 작성]</b>을 누르면 최근 영상 50개의 제목·설명을 읽고 초안을 만들어 줍니다. 확인 후 저장하세요.</p>
+    <div class="line"><button class="btn solid" id="genId" type="button">내 채널 분석해서 자동 작성</button></div>
+    <p id="idPath" style="word-break:break-all"></p>
+    <textarea id="identityText" spellcheck="false"></textarea>
+    <div class="line">
+      <button class="btn solid" id="saveId" type="button">저장</button>
+      <button class="btn" id="loadIdBtn" type="button">.md 파일 불러오기</button>
+    </div>
+    <input type="file" id="idFile" accept=".md,.txt,text/markdown,text/plain" hidden>
+    <div class="msg" id="msgId"></div>
+  </div>
+
+  <div class="sbox">
+    <h3>4. 음성 인식 (로컬 Whisper)</h3>
+    <p id="whisperInfo"></p>
+    <select id="whisperSel">
+      <option value="auto">자동 (PC 사양에 맞춰 선택)</option>
+      <option value="large-v3-turbo">large-v3-turbo · 가장 정확 (그래픽카드 권장)</option>
+      <option value="medium">medium · 보통</option>
+      <option value="small">small · 빠름, 정확도 낮음</option>
+    </select>
+  </div>
+
+  <div class="sbox">
+    <h3>5. 체크박스 기본값</h3>
+    <label class="chk"><input type="checkbox" id="dAi"><span class="bx"></span><span class="tx">AI 사용 기본 체크</span></label>
+    <label class="chk"><input type="checkbox" id="dPaid"><span class="bx"></span><span class="tx">유료 프로모션 기본 체크</span></label>
+    <label class="chk"><input type="checkbox" id="dKids"><span class="bx"></span><span class="tx">아동용 기본 체크</span></label>
+  </div>
+
+  <div class="sbox">
+    <h3>6. 업데이트 <span class="ok en">v__GUP_VERSION__</span></h3>
+    <p id="updInfo">새 버전이 나오면 상단에 업데이트 버튼이 나타납니다.</p>
+    <div class="line"><button class="btn" id="checkUpd" type="button">지금 확인</button><button class="btn solid" id="installUpd" type="button" style="display:none">업데이트 설치</button></div>
+  </div>
+</aside>
+
+<div class="studio" id="studioWrap">
+  <div class="studio-bar"><span class="en">THUMBNAIL STUDIO</span><span class="hint" id="studioHint"></span><button class="pill" id="studioClose" type="button">닫기</button></div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="/static/sphere.js?v=__GUP_BUILD__"></script>
+<script src="/static/app.js?v=__GUP_BUILD__"></script>
+</body>
+</html>

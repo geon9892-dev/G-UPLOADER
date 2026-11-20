@@ -1,0 +1,25 @@
+# 가상환경, 캐시
+.venv/
+__pycache__/
+*.pyc
+
+# 빌드 결과
+build/
+dist/
+installer/Output/
+*.spec
+
+# 개인 정보: 절대 올리지 않기
+.env
+client_secret*.json
+secrets.bin
+settings.json
+identity.md
+token*.json
+
+# 기타
+.claude/
+*.log
+
+# 디자인 참고 자료 (공개하지 않음)
+*.gif

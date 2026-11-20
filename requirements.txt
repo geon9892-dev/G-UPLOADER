@@ -1,0 +1,10 @@
+fastapi>=0.115
+uvicorn>=0.34
+python-multipart>=0.0.20
+anthropic>=2.10
+faster-whisper>=1.1
+google-api-python-client>=2.160
+google-auth-oauthlib>=1.2
+google-auth>=2.38
+httpx>=0.28
+Pillow>=11.0
